@@ -104,6 +104,9 @@ def save_feature_to_pickle(method):
                 mamadroid_feature_list = []
         if mamadroid_feature_list:
             mamadroid_feature_numpy = np.concatenate((mamadroid_feature_numpy,np.array(mamadroid_feature_list, dtype = np.float16)), axis=0)
+        save_pickle_dir = os.path.join(root_dir, 'save_pickle')
+        if not os.path.exists(save_pickle_dir):
+            os.mkdir(save_pickle_dir)
         with open(os.path.join(root_dir, 'save_pickle/{}.jlb'.format(file_name.replace('.txt', ''))), 'wb') as f:
             joblib.dump(mamadroid_feature_numpy, f)
     with open(os.path.join(root_dir, '{}_save_feature_list.csv'.format(method)), 'wb') as f:

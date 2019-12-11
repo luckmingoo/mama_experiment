@@ -15,7 +15,7 @@ import subprocess
 import argparse
 
 parser = argparse.ArgumentParser()
-parser.add_argument('-s', '--method', type=str)
+parser.add_argument('-m', '--method', type=str)
 args = parser.parse_args()
 
 def run_task(method, graph_path, output_path, idx):
@@ -51,7 +51,7 @@ def main():
             graph_path = '/home/mlsnrs/apks/AndroZoo/result_malware_soot/malware_{}/graphs/{}.txt'.format(fs_year, md5)
         output_dir = os.path.join(root_dir, 'feature/{}'.format(fs_year))
         if not os.path.exists(output_dir):
-            os.makedirs(output_dir)
+            os.makedirs(output_dir, 0775)
         output_path = os.path.join(output_dir, '{}_{}.csv'.format(method, md5))
         p.apply_async(run_task, args = (method, graph_path, output_path, idx, ))
     p.close()
