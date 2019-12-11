@@ -14,7 +14,7 @@ import random
 
 
 def split_new_dataset():
-    dataset_dir = '/home/mlsnrs/apks/VirusShare/dataset_s_baseline/dataset_20132014/'
+    dataset_dir = '/home/mlsnrs/apks/VirusShare/dataset_s_baseline/dataset_20162017/'
     year_2013_txt = ['train_00_filename.txt', 'test_00_filename.txt']
     year_2014_txt = ['test_%02d_filename.txt' % (_ + 1) for _ in range(12)]
     
@@ -62,15 +62,19 @@ def split_new_dataset():
         row = year_2013_data[1].pop(rand_idx)
         test_data[0].append(row)
     for i in range(12):
-        for _ in range(1800):
+        malware_num = min(len(year_2014_data[i][1]), 200)
+        print('month: %d' % (i + 1))
+        for _ in range(malware_num * 9):
             rand_idx = random.randint(0, len(year_2014_data[i][0]) - 1)
             row = year_2014_data[i][0].pop(rand_idx)
             test_data[i + 1].append(row)
-        for _ in range(200):
+        for _ in range(malware_num):
             rand_idx = random.randint(0, len(year_2014_data[i][1]) - 1)
             row = year_2014_data[i][1].pop(rand_idx)
             test_data[i + 1].append(row)
-    save_dir = '/home/mlsnrs/apks/VirusShare/dataset_s_baseline/dataset_20132014_light_weight'
+    save_dir = '/home/mlsnrs/apks/VirusShare/dataset_s_baseline/dataset_20162017_light_weight'
+    if not os.path.exists(save_dir):
+        os.mkdir(save_dir)
     with open(os.path.join(save_dir, 'train_00_filename.txt'), 'wb') as f:
         writer = csv.writer(f) 
         writer.writerows(train_data)

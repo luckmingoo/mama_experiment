@@ -16,6 +16,8 @@ import argparse
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-m', '--method', type=str)
+parser.add_argument('-d', '--dataset', type=str)
+# ['dataset_20132014_light_weight', 'dataset_20162017_light_weight']
 args = parser.parse_args()
 
 def run_task(method, graph_path, output_path, idx):
@@ -26,9 +28,11 @@ def run_task(method, graph_path, output_path, idx):
 
 def main():
     method = args.method
-    root_dir = '/home/mlsnrs/apks/ssd_1T/mamadroid/light_weight_dataset/%s' % method
+    dataset = args.dataset
+#     root_dir = '/home/mlsnrs/apks/ssd_1T/mamadroid/light_weight_dataset/%s' % method
+    root_dir = '/home/mlsnrs/apks/ssd_1T/mamadroid/%s/%s' % (dataset, method)
     dataset_list = []
-    dataset_dir = '/home/mlsnrs/apks/VirusShare/dataset_s_baseline/dataset_20132014_light_weight'
+    dataset_dir = '/home/mlsnrs/apks/VirusShare/dataset_s_baseline/%s' % dataset
     for file_name in os.listdir(dataset_dir):
         with open(os.path.join(dataset_dir, file_name), 'r') as f:
             reader = csv.reader(f) 

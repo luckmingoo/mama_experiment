@@ -14,10 +14,10 @@ import numpy
 import os 
 import time
 
-parser = argparse.ArgumentParser()
-parser.add_argument("-s","--source", type=str)
-parser.add_argument("-o", "--output", type=str)
-args = parser.parse_args()
+# parser = argparse.ArgumentParser()
+# parser.add_argument("-s","--source", type=str)
+# parser.add_argument("-o", "--output", type=str)
+# args = parser.parse_args()
 
 
 #Dummy Coding for Markov Transition matrix
@@ -168,7 +168,7 @@ def extract_packages_feature(wholefile):
                 for k in range (0,len(splitted)):
                     if len(splitted[k])<3:
                         obfcount+=1
-                if obfcount >= len(splitted)/2:
+                if obfcount >= len(splitted)/2.0:
                     match='obfuscated'
                 else:
                     match='selfdefined'
@@ -179,6 +179,10 @@ def extract_packages_feature(wholefile):
                     match = package_mapping[match]
             Packetsline.append(match)
         Packetsfile.append(Packetsline)
+    with open('tmp_v1.txt', 'w') as f:
+        for line in Packetsfile:
+            f.write('\t'.join(line))
+            f.write('\n')
     return Packetsfile
 
 def markov_feature(features, output_path):
@@ -220,10 +224,10 @@ def get_package_mapping():
     return package_mapping
     
 if __name__ == "__main__":
-    graph_path = args.source
-    output_path = args.output
-#     graph_path = '92f3ae12c953d6f1f057dfacb070c358.txt'
-#     output_path = '92f3ae12c953d6f1f057dfacb070c358.csv'
+#     graph_path = args.source
+#     output_path = args.output
+    graph_path = '92f3ae12c953d6f1f057dfacb070c358.txt'
+    output_path = '92f3ae12c953d6f1f057dfacb070c358.csv'
     start = time.time()
     if os.path.exists(graph_path) and not os.path.exists(output_path):
         extract_mama_feature(graph_path, output_path)

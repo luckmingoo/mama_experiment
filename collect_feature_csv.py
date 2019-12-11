@@ -19,6 +19,8 @@ from sklearn.externals import joblib
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-m","--method", type=str)
+parser.add_argument('-d', '--dataset', type=str)
+# ['dataset_20132014_light_weight', 'dataset_20162017_light_weight']
 args = parser.parse_args()
 
 # start = time.time()
@@ -53,9 +55,9 @@ args = parser.parse_args()
 # print('spend %f' % (time.time() - start))
 # print(type(data))
 
-def save_feature_to_pickle(method):
-    root_dir = '/home/mlsnrs/apks/ssd_1T/mamadroid/light_weight_dataset/%s' % method
-    dataset_dir = '/home/mlsnrs/apks/VirusShare/dataset_s_baseline/dataset_20132014_light_weight'
+def save_feature_to_pickle(method, dataset):
+    root_dir = '/home/mlsnrs/apks/ssd_1T/mamadroid/%s/%s' % (dataset, method)
+    dataset_dir = '/home/mlsnrs/apks/VirusShare/dataset_s_baseline/%s' % dataset
     dataset = {}
     for file_name in os.listdir(dataset_dir):
         dataset[file_name] = []
@@ -116,5 +118,6 @@ def save_feature_to_pickle(method):
                  
 if __name__ == "__main__":
     method = args.method
-    save_feature_to_pickle(method)
+    dataset = args.dataset
+    save_feature_to_pickle(method, dataset)
     print('finish')

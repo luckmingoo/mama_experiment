@@ -1,0 +1,140 @@
+java.lang	android.content	android.content	obfuscated	android.content	android.content
+obfuscated	obfuscated	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	selfdefined	selfdefined	selfdefined	selfdefined	java.lang	java.lang	java.lang	java.lang	java.util
+android.app	java.lang
+obfuscated	android.content
+obfuscated	android.view	obfuscated	obfuscated	android.app	android.app	android.app
+obfuscated	obfuscated	android.content	android.view	android.os	android.app	android.view	android.os	android.app	android.view	android.content	android.os	android.app	android.content	android.content	obfuscated	obfuscated	android.content	android.view	android.os	obfuscated	obfuscated	obfuscated	android.view	android.os	obfuscated	obfuscated	obfuscated	android.view	android.content	android.os	obfuscated	obfuscated	obfuscated	obfuscated	obfuscated	android.content	obfuscated	android.content	obfuscated	obfuscated	android.content	obfuscated
+java.io	java.lang
+obfuscated	android.content	android.content	java.lang	android.content	java.lang	android.app	android.app	selfdefined
+android.app	java.lang	android.app	obfuscated	android.content
+android.content	java.lang
+android.telephony	java.lang
+obfuscated	android.app
+android.content	android.content
+obfuscated	android.app
+obfuscated	obfuscated
+android.content	java.lang	java.lang
+obfuscated	selfdefined
+java.util	java.lang	java.lang
+java.util	java.lang	java.lang
+obfuscated	android.content	android.net	android.net	android.content	android.net	android.view	android.app
+obfuscated	obfuscated
+selfdefined	obfuscated
+android.content	java.lang	java.lang
+java.lang	java.lang
+java.lang	java.lang	java.lang
+android.app	java.lang
+android.content	java.lang
+android.app	java.lang
+android.app	java.lang
+obfuscated	java.lang	java.lang	java.lang	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.lang	java.lang	java.lang	java.lang	obfuscated	obfuscated	obfuscated	obfuscated	obfuscated	obfuscated	obfuscated	obfuscated
+obfuscated	android.app	android.app	obfuscated	obfuscated
+obfuscated	android.content	android.content	java.lang	android.view	android.app	obfuscated	obfuscated
+android.content	java.lang
+java.io	java.lang	java.lang
+java.lang	java.lang
+obfuscated	android.app
+java.lang	java.lang	java.lang
+java.util	java.lang
+android.content	java.lang
+android.util	java.lang
+java.io	java.lang
+android.app	java.lang
+java.lang	java.lang
+android.app	java.lang
+android.app	java.lang
+java.util	java.lang	java.util
+selfdefined	android.content	obfuscated
+java.lang	java.lang
+obfuscated	java.lang	java.lang	obfuscated	obfuscated	obfuscated	obfuscated	obfuscated	obfuscated	obfuscated	obfuscated	obfuscated	obfuscated	obfuscated	obfuscated	obfuscated	obfuscated	obfuscated	obfuscated	obfuscated	obfuscated	obfuscated	obfuscated	obfuscated	obfuscated	obfuscated	obfuscated	obfuscated	obfuscated	obfuscated	obfuscated	obfuscated	obfuscated	obfuscated	obfuscated	obfuscated	obfuscated	obfuscated	obfuscated	obfuscated	obfuscated	obfuscated	obfuscated	obfuscated	obfuscated	obfuscated	obfuscated	obfuscated	obfuscated	obfuscated	obfuscated	obfuscated	obfuscated	obfuscated	obfuscated	obfuscated	obfuscated	obfuscated	obfuscated	obfuscated	obfuscated	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	obfuscated	java.util	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	android.util	java.lang	java.lang	java.lang	java.lang	java.lang	java.lang	java.lang	java.lang	java.lang	java.lang	java.lang	java.lang	java.lang	java.lang	java.lang	java.lang	java.lang	java.lang	java.lang	java.lang	java.lang	java.lang	java.lang	java.lang	java.lang	java.lang	java.lang	java.lang	java.lang	java.lang	java.lang	java.lang	java.lang	java.lang	java.lang	java.lang	java.lang	java.lang	java.lang	java.lang	java.lang	java.lang	java.lang	java.lang	java.lang	java.lang	java.lang	java.lang	java.lang	java.lang	java.lang	java.lang	java.lang	java.lang	java.lang	java.lang	java.lang	java.lang	java.lang	java.lang	java.lang	java.lang	java.lang	java.lang	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.util	java.lang	java.util	java.lang	java.util	java.lang	java.util	java.lang	java.util	java.lang	java.util	java.lang	java.util	java.lang	java.util	java.lang	java.util	java.lang	java.util	java.lang	java.util	java.lang	java.util	java.lang	java.util	java.lang	java.util	java.lang	java.util	java.lang	java.util	java.lang	java.util	java.lang	java.util	java.lang	java.util	java.util	java.util	java.lang	java.util	java.lang	java.util	java.util	java.util	java.lang	java.util	java.lang	java.util	java.lang	java.util	java.lang	java.util	java.lang	java.util	java.lang	java.util	java.lang	java.util	java.lang	java.util	java.lang	java.util	java.lang	java.util	java.lang	java.util	java.lang	java.util	java.lang	java.util	java.lang	java.util	java.lang	java.util	java.lang	java.util	java.lang	java.util	java.lang	java.util	java.lang	java.util	java.lang	java.util	java.lang	java.util	java.lang	java.util	java.lang	java.util	java.lang	java.util	java.lang	java.util	java.lang	java.util	java.lang	java.util	java.lang	java.util	java.lang	java.util	java.lang	java.util	java.lang	java.util	java.lang	java.util	java.lang	java.util	java.lang	java.util	java.lang	java.util	java.lang	java.util	java.lang	java.util	java.lang	java.util	java.lang	java.util	java.lang	java.util	java.lang	java.util	java.lang	java.util	java.lang	java.util	java.lang	java.util	java.lang	java.util	java.lang	java.util	java.lang	java.util	java.lang	java.util	java.lang	java.util	java.lang	java.util	java.lang	java.util	java.lang	java.util	java.lang	java.util	java.lang	java.util	java.lang	java.util	java.lang
+java.lang	java.lang	java.lang
+obfuscated	android.app	obfuscated	android.content	obfuscated
+java.util	java.lang	java.util
+obfuscated	android.app	obfuscated	obfuscated
+android.content	java.lang	android.content
+java.lang	java.lang	java.lang
+java.lang	java.lang
+java.lang	java.lang
+java.lang	java.lang
+obfuscated	android.app
+java.io	java.lang	java.io
+obfuscated	obfuscated	obfuscated	obfuscated	obfuscated	android.app	android.app	android.app	obfuscated	obfuscated	obfuscated	android.app
+android.app	java.lang
+obfuscated	obfuscated
+android.net	android.net	android.net
+obfuscated	android.content	obfuscated
+android.content	java.lang	java.lang
+android.app	java.lang	android.app	obfuscated
+selfdefined	java.io	java.io	java.io	java.io	java.io	java.io	android.view
+java.lang	java.lang
+android.text	java.lang	java.lang
+obfuscated	obfuscated
+android.app	java.lang	java.lang
+android.view	java.lang
+android.util	java.lang	java.lang
+obfuscated	obfuscated
+android.app	java.lang
+java.lang	java.lang
+android.app	java.lang
+android.app	android.app
+obfuscated	android.content	java.lang	java.lang	java.lang	android.telephony	android.app	obfuscated	android.content	obfuscated	java.lang	java.lang	java.lang	android.app	java.lang	java.lang	java.lang	java.lang	java.lang	java.lang	java.lang	java.lang	java.lang	java.lang	android.content	java.lang	java.lang	java.lang	java.lang	java.lang	java.lang	java.lang	java.lang
+java.lang	java.lang
+android.os	java.lang	android.os
+android.content	android.content
+android.content	java.lang
+selfdefined	java.io	java.io	java.io	java.io	java.io	java.io	java.io	java.io	java.io	java.util	java.util	java.lang	java.util	java.lang	android.view
+obfuscated	java.lang	java.lang	java.lang	java.lang	java.lang	android.app	android.app	android.view
+android.widget	java.lang
+java.io	java.lang	java.lang
+android.content	java.lang	java.lang
+android.content	java.lang
+java.lang	java.lang
+android.view	android.view	android.view	android.view	android.view	android.view	android.view	android.view	android.view	android.view	android.view	android.view	android.view	android.view	android.view	android.view	android.view	android.view	android.view	android.view	android.view	android.view	android.view	android.view	android.view	android.view	android.view	android.view	android.view	android.view	android.view	android.view	android.view	android.view	android.view	android.view	android.view	android.view	android.view	android.view	android.view	android.view	android.view	android.view	android.view
+obfuscated	android.content
+obfuscated	android.content	android.util	java.lang	android.app	obfuscated	android.content	obfuscated	android.app	android.content	android.content	obfuscated
+android.content	java.lang	java.lang
+android.view	java.lang	android.content
+java.util	java.lang	java.util
+obfuscated	android.text	android.app
+java.io	java.lang	java.io
+obfuscated	android.content	android.util	java.lang	android.app	obfuscated	android.content	obfuscated	android.app	android.content	android.content	obfuscated	android.content	obfuscated
+selfdefined	java.lang	java.lang	java.lang	java.lang	java.lang	obfuscated	java.lang	java.lang	java.lang	java.io	java.io	java.io	java.io	java.io	java.io	java.io	java.util	java.util	java.lang	android.view
+android.view	java.lang
+obfuscated	java.lang
+obfuscated	obfuscated	obfuscated	obfuscated	selfdefined	selfdefined	obfuscated	obfuscated	obfuscated	obfuscated	obfuscated	obfuscated	obfuscated	obfuscated	obfuscated	obfuscated	obfuscated	obfuscated	android.content	java.util
+java.lang	java.lang	java.lang
+selfdefined	java.io	java.io	java.io	java.io	java.io	java.io	java.io	android.view
+android.app	java.lang
+android.content	java.lang	java.lang
+android.os	android.os	android.os
+android.app	java.lang
+android.text	java.lang	android.text
+obfuscated	java.lang
+java.lang	java.lang
+java.lang	java.lang
+java.util	java.lang
+obfuscated	android.app	android.app	obfuscated
+android.app	android.app
+android.app	java.lang
+java.lang	java.lang	java.lang
+obfuscated	android.text	android.app	selfdefined	selfdefined	java.lang	java.lang
+android.view	java.lang	java.lang
+obfuscated	android.view	android.app	android.app
+android.content	java.lang
+android.net	java.lang
+obfuscated	android.app	android.app	obfuscated	obfuscated
+java.lang	java.lang
+android.app	java.lang
+android.app	java.lang
+obfuscated	android.app
+android.app	java.lang
+java.lang	java.lang	java.lang
+obfuscated	android.app	obfuscated	android.widget	obfuscated	obfuscated	selfdefined	android.app	android.content	obfuscated	android.content	android.app
+java.lang	java.lang	java.lang
+obfuscated	android.app	obfuscated
+obfuscated	android.content	android.content	obfuscated	android.content	android.content
+android.os	java.lang	java.lang
+obfuscated	obfuscated	obfuscated	obfuscated	java.lang	java.lang	java.lang	obfuscated	obfuscated	java.util	java.util
+android.app	java.lang	android.view
+android.content	java.lang	java.lang
+java.util	java.lang
