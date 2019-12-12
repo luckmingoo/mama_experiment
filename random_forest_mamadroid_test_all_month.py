@@ -19,7 +19,9 @@ from sklearn.metrics import confusion_matrix
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-m', '--method', type=str)
-parser.add_argument('-d', '--dataset', type=str)
+parser.add_argument('-d1', '--train_dataset', type=str)
+# ['dataset_20132014_light_weight', 'dataset_20162017_light_weight']
+parser.add_argument('-d2', '--test_dataset', type=str)
 # ['dataset_20132014_light_weight', 'dataset_20162017_light_weight']
 args = parser.parse_args()
 
@@ -116,14 +118,14 @@ def get_train_data(dataset, method, save_feature_dict):
     y_train = y_train[s]
     return x_train, y_train
 
-def evaluation(method, dataset): 
-    log_name = 'log/%s_%s_evaluation.txt' % (dataset, method)
+def evaluation(method, train_dataset, test_dataset): 
+    log_name = 'log/%s_%s_evaluation.txt' % (train_dataset, method)
     if os.path.exists(log_name):
         os.remove(log_name)
-    save_feature_path = '/home/mlsnrs/apks/ssd_1T/mamadroid/%s/%s/%s_save_feature_list.csv' % (dataset, method, method)
+    save_feature_path = '/home/mlsnrs/apks/ssd_1T/mamadroid/%s/%s/%s_save_feature_list.csv' % (train_dataset, method, method)
     save_feature_dict = get_save_feature_dict(save_feature_path)
     print('have read save_feature_dict: %d' % len(save_feature_dict))
-    x_train, y_train = get_train_data(dataset, method, save_feature_dict)
+    x_train, y_train = get_train_data(train_dataset, method, save_feature_dict)
     print('x_train shape: %s y_train shape: %s' % (str(x_train.shape), str(y_train.shape)))
     start = time.time()
     print('start train')
@@ -144,7 +146,23 @@ def evaluation(method, dataset):
     x_train = []
     y_train = []
     for test_id in range(0, 13):
-        x_test, y_test = get_test_data(dataset, test_id, method, save_feature_dict)
+        x_test, y_test = get_test_data(train_dataset, test_id, method, save_feature_dict)
+        print('x_test shape: %s y_test shape: %s' % (str(x_test.shape), str(y_test.shape)))
+        y_pred = clf.predict(x_test)
+        cm = confusion_matrix(y_test, y_pred)
+        TP = cm[1][1]
+        FP = cm[0][1]
+        TN = cm[0][0]
+        FN = cm[1][0]
+        F1 = float(2*TP)/(2*TP + FN + FP)
+        print('test_id %d TP FP TN FN F1: %d %d %d %d %.4f' % (test_id, TP, FP, TN, FN, F1))
+        with open(log_name, 'a') as f:
+            f.write('test_id %d TP FP TN FN F1: %d %d %d %d %.4f\n' % (test_id, TP, FP, TN, FN, F1))
+
+    save_feature_path = '/home/mlsnrs/apks/ssd_1T/mamadroid/%s/%s/%s_save_feature_list.csv' % (test_dataset, method, method)
+    save_feature_dict = get_save_feature_dict(save_feature_path)
+    for test_id in range(0, 13):
+        x_test, y_test = get_test_data(test_dataset, test_id, method, save_feature_dict)
         print('x_test shape: %s y_test shape: %s' % (str(x_test.shape), str(y_test.shape)))
         y_pred = clf.predict(x_test)
         cm = confusion_matrix(y_test, y_pred)
@@ -160,6 +178,7 @@ def evaluation(method, dataset):
 
 if __name__ == "__main__":
     method = args.method
-    dataset = args.dataset
-    evaluation(method, dataset)
+    train_dataset = args.train_dataset
+    test_dataset = args.test_dataset
+    evaluation(method, train_dataset, test_dataset)
     print('finish')
