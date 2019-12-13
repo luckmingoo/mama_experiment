@@ -13,6 +13,7 @@ import argparse
 import numpy
 import os 
 import time
+import json
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-s","--source", type=str)
@@ -77,36 +78,6 @@ def PackAbs(call, pos):
             break
     return package
 
-# def parse_file(graph_path):
-#     with open(graph_path, 'r') as callseq:
-#         specificapp=[]
-#         for line in callseq:
-#             specificapp.append(line)
-#         callseq.close()
-# 
-#     call=[]
-#     nextblock=[]
-#     nextcall=[]
-#     for line in specificapp:
-#         if (line[0]=='<' and (line[1]=="'" or line[1].isalpha())):
-#             call.append(str(line.split('(')[0]))
-#             nextblock.append(str(line.split('==>')[1]))
-# 
-#     for j in range (0,len(nextblock)):
-#         supporto=nextblock[j].translate(None, '[]\'\\')
-#         supporto=supporto.replace('\n','')
-#         nextcall.append([])
-#         nextcall[j]=(supporto.split(',')) # if a method has two or above paras,
-#     wholefile=[] 
-#     for j in range (0, len(call)):
-#         eachline=call[j]+'\t'
-#         for k in range (0,len(nextcall[j])):
-#             tagliaparam=nextcall[j][k].split('(')[0]
-#             eachline=eachline+tagliaparam+'\t'
-#         wholefile.append(eachline)
-#     return wholefile
-
-
 def parse_file(graph_path):
     with open(graph_path, 'r') as callseq:
         specificapp=[]
@@ -137,40 +108,9 @@ def parse_file(graph_path):
         wholefile.append(eachline)
     return wholefile
 
-def extract_families_feature(wholefile):
-    PACKETS=[]
-    with open('Families.txt') as packseq:
-        for line in packseq:
-            PACKETS.append(line.replace('\n',''))
-        packseq.close()
-    Packetsfile=[]
-    for line in wholefile:
-        Packetsline=[]
-        for j in line.split('\t')[:-1]:
-            match = False
-            for y in PACKETS:
-                x = y.partition('.')[2] 
-                j = j.replace('<','')
-                j = j.replace(' ','')
-                if j.startswith(x):
-                    match = x
-                    break
-            if match == False:
-                splitted = j.split('.')
-                obfcount=0
-                for k in range (0,len(splitted)):
-                    if len(splitted[k])<3:
-                        obfcount+=1
-                if obfcount>=len(splitted)/2:
-                    match='obfuscated'
-                else:
-                    match='selfdefined'
-            Packetsline.append(match)
-        Packetsfile.append(Packetsline)
-    return Packetsfile
 
 def extract_packages_feature(wholefile):
-    package_mapping = get_package_mapping()
+    packages_translate = get_package_mapping()
     PACKETS=[]
     with open('Packages.txt') as packseq:
         for line in packseq:
@@ -200,29 +140,31 @@ def extract_packages_feature(wholefile):
                 for k in range (0,len(splitted)):
                     if len(splitted[k])<3:
                         obfcount+=1
-                if obfcount >= len(splitted)/2:
+                if obfcount >= len(splitted)/2.0:
                     match='obfuscated'
                 else:
                     match='selfdefined'
-            if match in package_mapping:
-                if match == 'java.lang' and j.split('.')[-1] in ['ClassLoader', 'Process', 'ProcessBuilder', 'Runtime', 'SecurityManager', 'System']:
-                    match = 'java.lang.system'
-                else:
-                    match = package_mapping[match]
+            else: # add, to use filted packages
+                try:
+                    match = packages_translate[match]
+    #                                 print('match %s %s' % (match, j))
+                except Exception, err:
+    #                                 print('not match %s: %s %s' % (str(err), match, j))
+                    match = match
             Packetsline.append(match)
         Packetsfile.append(Packetsline)
-    return Packetsfile
+#     with open('tmp_v2.txt', 'w') as f:
+#         for line in Packetsfile:
+#             f.write('\t'.join(line))
+#             f.write('\n')
+    return Packetsfile          
 
 def markov_feature(features, output_path):
-    PACKETS=[]
-    with open('package_uniq.txt', 'r') as packseq:
-        for line in packseq:
-            PACKETS.append(line.replace('\n',''))
-        packseq.close()
+    packages_translate = get_package_mapping()
+    PACKETS = list(set(packages_translate.values()))
     allnodes = PACKETS
     allnodes.append('selfdefined')
     allnodes.append('obfuscated')
-    
 
 #     Header=[]
 #     for i in range (0,len(allnodes)):
@@ -244,12 +186,9 @@ def extract_mama_feature(graph_path, output_path):
     markov_feature(package_feature, output_path)
 
 def get_package_mapping():
-    package_mapping = {}
-    with open('package_mapping.txt', 'r') as f:
-        for line in f:
-            packages = line.strip().split(' ')
-            package_mapping[packages[0]] = packages[1]
-    return package_mapping
+    with open('packages_translate.json', 'r') as f:
+        packages_translate = json.load(f)
+    return packages_translate
     
 if __name__ == "__main__":
     graph_path = args.source

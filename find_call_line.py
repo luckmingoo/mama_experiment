@@ -29,7 +29,7 @@ def find_v0():
 
             
 def find_v1():
-    file_name = 'tmp_v0.txt'
+    file_name = 'tmp_v1.txt'
     with open(file_name, 'r') as f:
         idx = 0
         for line in f:
@@ -38,7 +38,18 @@ def find_v1():
             if line[0] == 'android.app' and 'android.content' in line[1:]:
                 print('%d: %s' % (idx, str(line))) 
 
+def find_v2():
+    file_name = 'tmp_v2.txt'
+    with open(file_name, 'r') as f:
+        idx = 0
+        for line in f:
+            idx += 1
+            line = line.strip().split('\t')
+            if line[0] == 'android.app' and 'selfdefined' in line[1:]:
+                print('%d: %s' % (idx, str(line)))
+
 if __name__ == "__main__":
-    find_v0()
+#     find_v0()
 #     find_v1()
+    find_v2()
     print('finished')

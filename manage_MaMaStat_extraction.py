@@ -18,6 +18,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument('-m', '--method', type=str)
 parser.add_argument('-d', '--dataset', type=str)
 # ['dataset_20132014_light_weight', 'dataset_20162017_light_weight']
+parser.add_argument('-u', '--user', type=str)
+# ['mlsnrs', 'shellhand']
 args = parser.parse_args()
 
 def run_task(method, graph_path, output_path, idx):
@@ -29,10 +31,18 @@ def run_task(method, graph_path, output_path, idx):
 def main():
     method = args.method
     dataset = args.dataset
+    user = args.user
 #     root_dir = '/home/mlsnrs/apks/ssd_1T/mamadroid/light_weight_dataset/%s' % method
-    root_dir = '/home/mlsnrs/apks/ssd_1T/mamadroid/%s/%s' % (dataset, method)
+    if user == 'mlsnrs':
+        root_dir_prefix = '/home/mlsnrs/apks'
+#         root_dir = '/home/mlsnrs/apks/ssd_1T/mamadroid/%s/%s' % (dataset, method)
+#         dataset_list = []
+#         dataset_dir = '/home/mlsnrs/apks/VirusShare/dataset_s_baseline/%s' % dataset
+    elif user == 'shellhand':
+        root_dir_prefix = '/mnt'
+    root_dir = '%s/ssd_1T/mamadroid/%s/%s' % (root_dir_prefix, dataset, method)
     dataset_list = []
-    dataset_dir = '/home/mlsnrs/apks/VirusShare/dataset_s_baseline/%s' % dataset
+    dataset_dir = '/mnt/VirusShare/dataset_s_baseline/%s' % dataset        
     for file_name in os.listdir(dataset_dir):
         with open(os.path.join(dataset_dir, file_name), 'r') as f:
             reader = csv.reader(f) 
@@ -50,9 +60,9 @@ def main():
         md5 = row[1]
         fs_year = row[2]
         if label == 0:
-            graph_path = '/home/mlsnrs/apks/AndroZoo/result_benign_soot/benign_{}/graphs/{}.txt'.format(fs_year, md5)
+            graph_path = '{}/AndroZoo/result_benign_soot/benign_{}/graphs/{}.txt'.format(root_dir_prefix, fs_year, md5)
         elif label == 1:
-            graph_path = '/home/mlsnrs/apks/AndroZoo/result_malware_soot/malware_{}/graphs/{}.txt'.format(fs_year, md5)
+            graph_path = '{}/AndroZoo/result_malware_soot/malware_{}/graphs/{}.txt'.format(root_dir_prefix, fs_year, md5)
         output_dir = os.path.join(root_dir, 'feature/{}'.format(fs_year))
         if not os.path.exists(output_dir):
             os.makedirs(output_dir, 0775)

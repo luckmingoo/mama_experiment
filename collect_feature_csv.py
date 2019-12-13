@@ -21,6 +21,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument("-m","--method", type=str)
 parser.add_argument('-d', '--dataset', type=str)
 # ['dataset_20132014_light_weight', 'dataset_20162017_light_weight']
+parser.add_argument('-u', '--user', type=str)
+# ['mlsnrs', 'shellhand']
 args = parser.parse_args()
 
 # start = time.time()
@@ -55,9 +57,13 @@ args = parser.parse_args()
 # print('spend %f' % (time.time() - start))
 # print(type(data))
 
-def save_feature_to_pickle(method, dataset):
-    root_dir = '/home/mlsnrs/apks/ssd_1T/mamadroid/%s/%s' % (dataset, method)
-    dataset_dir = '/home/mlsnrs/apks/VirusShare/dataset_s_baseline/%s' % dataset
+def save_feature_to_pickle(method, dataset, user):
+    if user == 'mlsnrs':
+        root_dir_prefix = '/home/mlsnrs/apks'
+    elif user == 'shellhand':
+        root_dir_prefix = '/mnt'
+    root_dir = '%s/ssd_1T/mamadroid/%s/%s' % (root_dir_prefix, dataset, method)
+    dataset_dir = '%s/VirusShare/dataset_s_baseline/%s' % (root_dir_prefix, dataset)
     dataset = {}
     for file_name in os.listdir(dataset_dir):
         dataset[file_name] = []
@@ -119,5 +125,6 @@ def save_feature_to_pickle(method, dataset):
 if __name__ == "__main__":
     method = args.method
     dataset = args.dataset
-    save_feature_to_pickle(method, dataset)
+    user = args.user
+    save_feature_to_pickle(method, dataset, user)
     print('finish')

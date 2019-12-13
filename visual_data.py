@@ -28,7 +28,7 @@ def cal_AUT(f1_list, labels):
                 
 def visual_data(log_list, labels):
     x = ['train']
-    for i in range(26):
+    for i in range(13):
         x.append('test' + str(i))
     y_list = []
     for log_file in log_list:
@@ -44,8 +44,8 @@ def visual_data(log_list, labels):
     for i, y in enumerate(y_list):
         plt.plot(x[0:], y[0:], 'o-', label = labels[i])
     plt.title('f1')
-    for i, y in enumerate([0.74, 0.71]):
-        plt.text(6.5, y, '%s AUT: %.4f' % (labels[i], AUTs[i]))
+    for i, label in enumerate(labels):
+        plt.text(6.5, 0.71 + 0.03*i, '%s AUT: %.4f' % (label, AUTs[i]))
     plt.legend()
     plt.savefig('f1.png', dpi = 150)
 
@@ -81,13 +81,13 @@ def main3():
 
 def main4():
     dataset = 'dataset_20132014_light_weight'
-    labels = ['450_package', 'cluster_v0'] # 'manual_package_v0', 'manual_package_v1', 
+    labels = ['manual_package_v0', 'manual_package_v2', 'manual_package_v3']# ['450_package', 'cluster_v0'] # 'manual_package_v0', 'manual_package_v1', 
 #     labels = ['origin', 'bagging'] # , 'bagging','validation'
     log_list = []
     for label in labels:
         log_list.append('./log/'  + dataset+ '_' + label + '_evaluation.txt')
 #         log_list.append('./log/' + label + '12_10.txt')
-    labels = ['mamadroid_origin_450', 'mamadroid_metaknowledge']
+#     labels = ['mamadroid_origin_450', 'mamadroid_metaknowledge']
     visual_data(log_list, labels)    
 
 if __name__ == "__main__":

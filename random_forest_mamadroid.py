@@ -21,6 +21,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument('-m', '--method', type=str)
 parser.add_argument('-d', '--dataset', type=str)
 # ['dataset_20132014_light_weight', 'dataset_20162017_light_weight']
+parser.add_argument('-u', '--user', type=str)
+# ['mlsnrs', 'shellhand']
 args = parser.parse_args()
 
 def get_save_feature_dict(save_feature_file):
@@ -36,10 +38,10 @@ def get_save_feature_dict(save_feature_file):
             save_feature_dict[md5] = [label, firstseen, file_name, save_idx]
     return save_feature_dict
 
-def get_test_data(dataset, test_id, method, save_feature_dict):
-    root_dir = '/home/mlsnrs/apks/ssd_1T/mamadroid/%s/%s' % (dataset, method)
+def get_test_data(dataset, test_id, method, save_feature_dict, root_dir_prefix):
+    root_dir = '%s/ssd_1T/mamadroid/%s/%s' % (root_dir_prefix, dataset, method)
     test_data_md5 = []
-    test_data_dir = '/home/mlsnrs/apks/VirusShare/dataset_s_baseline/%s' % (dataset)
+    test_data_dir = '%s/VirusShare/dataset_s_baseline/%s' % (root_dir_prefix, dataset)
     test_file  = 'test_%02d_filename.txt' % test_id
     with open(os.path.join(test_data_dir, test_file), 'r') as f:
         reader = csv.reader(f) 
@@ -76,10 +78,10 @@ def get_test_data(dataset, test_id, method, save_feature_dict):
     y_test = y_test[s]
     return x_test, y_test
 
-def get_train_data(dataset, method, save_feature_dict):
-    root_dir = '/home/mlsnrs/apks/ssd_1T/mamadroid/%s/%s' % (dataset, method)
+def get_train_data(dataset, method, save_feature_dict, root_dir_prefix):
+    root_dir = '%s/ssd_1T/mamadroid/%s/%s' % (root_dir_prefix, dataset, method)
     train_data_md5 = []
-    train_data_dir = '/home/mlsnrs/apks/VirusShare/dataset_s_baseline/%s' % (dataset)
+    train_data_dir = '%s/VirusShare/dataset_s_baseline/%s' % (root_dir_prefix, dataset)
     train_file  = 'train_00_filename.txt'
     with open(os.path.join(train_data_dir, train_file), 'r') as f:
         reader = csv.reader(f) 
@@ -116,14 +118,18 @@ def get_train_data(dataset, method, save_feature_dict):
     y_train = y_train[s]
     return x_train, y_train
 
-def evaluation(method, dataset): 
+def evaluation(method, dataset, user): 
     log_name = 'log/%s_%s_evaluation.txt' % (dataset, method)
     if os.path.exists(log_name):
         os.remove(log_name)
-    save_feature_path = '/home/mlsnrs/apks/ssd_1T/mamadroid/%s/%s/%s_save_feature_list.csv' % (dataset, method, method)
+    if user == 'mlsnrs':
+        root_dir_prefix = '/home/mlsnrs/apks'
+    elif user == 'shellhand':
+        root_dir_prefix = '/mnt'
+    save_feature_path = '%s/ssd_1T/mamadroid/%s/%s/%s_save_feature_list.csv' % (root_dir_prefix, dataset, method, method)
     save_feature_dict = get_save_feature_dict(save_feature_path)
     print('have read save_feature_dict: %d' % len(save_feature_dict))
-    x_train, y_train = get_train_data(dataset, method, save_feature_dict)
+    x_train, y_train = get_train_data(dataset, method, save_feature_dict, root_dir_prefix)
     print('x_train shape: %s y_train shape: %s' % (str(x_train.shape), str(y_train.shape)))
     start = time.time()
     print('start train')
@@ -144,7 +150,7 @@ def evaluation(method, dataset):
     x_train = []
     y_train = []
     for test_id in range(0, 13):
-        x_test, y_test = get_test_data(dataset, test_id, method, save_feature_dict)
+        x_test, y_test = get_test_data(dataset, test_id, method, save_feature_dict, root_dir_prefix)
         print('x_test shape: %s y_test shape: %s' % (str(x_test.shape), str(y_test.shape)))
         y_pred = clf.predict(x_test)
         cm = confusion_matrix(y_test, y_pred)
@@ -161,5 +167,6 @@ def evaluation(method, dataset):
 if __name__ == "__main__":
     method = args.method
     dataset = args.dataset
-    evaluation(method, dataset)
+    user = args.user
+    evaluation(method, dataset, user)
     print('finish')

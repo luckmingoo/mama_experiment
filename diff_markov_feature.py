@@ -69,13 +69,14 @@ def get_feature(feature_file):
 
 def main():
     manual_package_v0 = 'manual_package_v0_92f3ae12c953d6f1f057dfacb070c358.csv'
-    manual_package_v1 = 'manual_package_v1_92f3ae12c953d6f1f057dfacb070c358.csv'
+    manual_package_v1 = 'manual_package_v2_92f3ae12c953d6f1f057dfacb070c358.csv'
     feature_v0 = get_feature(manual_package_v0)
-    feature_v1 = get_feature(manual_package_v1)
+#     feature_v1 = get_feature(manual_package_v1)
+    feature_v2 = get_feature(manual_package_v1)
     header_v0 = get_v0_headers()
-    header_v1 = get_v1_headers()
+#     header_v1 = get_v1_headers()
     feature_v0_not_zero = get_not_zero_dimension(feature_v0, header_v0)
-    feature_v1_not_zero = get_not_zero_dimension(feature_v1, header_v1)
+    feature_v1_not_zero = get_not_zero_dimension(feature_v2, header_v0)
     print(feature_v0_not_zero - feature_v1_not_zero)
     print(feature_v1_not_zero - feature_v0_not_zero)
 
