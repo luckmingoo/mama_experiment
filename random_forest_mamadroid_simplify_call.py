@@ -23,9 +23,14 @@ parser.add_argument('-d', '--dataset', type=str)
 # ['dataset_20132014_light_weight', 'dataset_20162017_light_weight']
 parser.add_argument('-u', '--user', type=str)
 # ['mlsnrs', 'shellhand']
-parser.add_argument('-s', '--device_source', type = str)
-# ['ssd_1T', 'ssd_2T']
 args = parser.parse_args()
+
+def get_interested_idx(method):
+    if method == '450_package':
+        interested_idx = range(198024, 198916) # [198024:198916]
+    elif method == 'manual_package_v0':
+        interested_idx = range(47088, 47524)
+    return interested_idx
 
 def get_save_feature_dict(save_feature_file):
     save_feature_dict = {}
@@ -40,8 +45,9 @@ def get_save_feature_dict(save_feature_file):
             save_feature_dict[md5] = [label, firstseen, file_name, save_idx]
     return save_feature_dict
 
-def get_test_data(dataset, test_id, method, save_feature_dict, root_dir_prefix, device_source):
-    root_dir = '%s/%s/mamadroid/%s/%s' % (root_dir_prefix, device_source, dataset, method)
+def get_test_data(dataset, test_id, method, save_feature_dict, root_dir_prefix):
+    interested_idx = get_interested_idx(method)
+    root_dir = '%s/ssd_1T/mamadroid/%s/%s' % (root_dir_prefix, dataset, method)
     test_data_md5 = []
     test_data_dir = '%s/VirusShare/dataset_s_baseline/%s' % (root_dir_prefix, dataset)
     test_file  = 'test_%02d_filename.txt' % test_id
@@ -70,7 +76,7 @@ def get_test_data(dataset, test_id, method, save_feature_dict, root_dir_prefix, 
             continue
         idx = save_feature_dict[md5][3]
         markov_feature = feature_np[idx,]
-        tmp_x_test.append(markov_feature)
+        tmp_x_test.append(markov_feature[interested_idx])
         tmp_y_test.append(label)
     x_test = np.array(tmp_x_test)
     y_test = np.array(tmp_y_test)
@@ -80,8 +86,9 @@ def get_test_data(dataset, test_id, method, save_feature_dict, root_dir_prefix, 
     y_test = y_test[s]
     return x_test, y_test
 
-def get_train_data(dataset, method, save_feature_dict, root_dir_prefix, device_source):
-    root_dir = '%s/%s/mamadroid/%s/%s' % (root_dir_prefix, device_source, dataset, method)
+def get_train_data(dataset, method, save_feature_dict, root_dir_prefix):
+    interested_idx = get_interested_idx(method)
+    root_dir = '%s/ssd_1T/mamadroid/%s/%s' % (root_dir_prefix, dataset, method)
     train_data_md5 = []
     train_data_dir = '%s/VirusShare/dataset_s_baseline/%s' % (root_dir_prefix, dataset)
     train_file  = 'train_00_filename.txt'
@@ -110,7 +117,7 @@ def get_train_data(dataset, method, save_feature_dict, root_dir_prefix, device_s
             continue
         idx = save_feature_dict[md5][3]
         markov_feature = feature_np[idx,]
-        tmp_x_train.append(markov_feature)
+        tmp_x_train.append(markov_feature[interested_idx])
         tmp_y_train.append(label)
     x_train = np.array(tmp_x_train)
     y_train = np.array(tmp_y_train)
@@ -120,18 +127,18 @@ def get_train_data(dataset, method, save_feature_dict, root_dir_prefix, device_s
     y_train = y_train[s]
     return x_train, y_train
 
-def evaluation(method, dataset, user, device_source): 
-    log_name = 'log/%s_%s_evaluation.txt' % (dataset, method)
+def evaluation(dataset, user, method):
+    log_name = 'log/%s_%s_simplify_feature_evaluation.txt' % (dataset, method)
     if os.path.exists(log_name):
         os.remove(log_name)
     if user == 'mlsnrs':
         root_dir_prefix = '/home/mlsnrs/apks'
     elif user == 'shellhand':
         root_dir_prefix = '/mnt'
-    save_feature_path = '%s/%s/mamadroid/%s/%s/%s_save_feature_list.csv' % (root_dir_prefix, device_source, dataset, method, method)
+    save_feature_path = '%s/ssd_1T/mamadroid/%s/%s/%s_save_feature_list.csv' % (root_dir_prefix, dataset, method, method)
     save_feature_dict = get_save_feature_dict(save_feature_path)
     print('have read save_feature_dict: %d' % len(save_feature_dict))
-    x_train, y_train = get_train_data(dataset, method, save_feature_dict, root_dir_prefix, device_source)
+    x_train, y_train = get_train_data(dataset, method, save_feature_dict, root_dir_prefix)
     print('x_train shape: %s y_train shape: %s' % (str(x_train.shape), str(y_train.shape)))
     start = time.time()
     print('start train')
@@ -152,7 +159,7 @@ def evaluation(method, dataset, user, device_source):
     x_train = []
     y_train = []
     for test_id in range(0, 13):
-        x_test, y_test = get_test_data(dataset, test_id, method, save_feature_dict, root_dir_prefix, device_source)
+        x_test, y_test = get_test_data(dataset, test_id, method, save_feature_dict, root_dir_prefix)
         print('x_test shape: %s y_test shape: %s' % (str(x_test.shape), str(y_test.shape)))
         y_pred = clf.predict(x_test)
         cm = confusion_matrix(y_test, y_pred)
@@ -165,11 +172,9 @@ def evaluation(method, dataset, user, device_source):
         with open(log_name, 'a') as f:
             f.write('test_id %d TP FP TN FN F1: %d %d %d %d %.4f\n' % (test_id, TP, FP, TN, FN, F1))
 
-
 if __name__ == "__main__":
-    method = args.method
     dataset = args.dataset
     user = args.user
-    device_source = args.device_source
-    evaluation(method, dataset, user, device_source)
+    method = args.method
+    evaluation(dataset, user, method)
     print('finish')

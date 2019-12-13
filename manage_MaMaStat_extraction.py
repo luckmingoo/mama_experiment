@@ -20,6 +20,8 @@ parser.add_argument('-d', '--dataset', type=str)
 # ['dataset_20132014_light_weight', 'dataset_20162017_light_weight']
 parser.add_argument('-u', '--user', type=str)
 # ['mlsnrs', 'shellhand']
+parser.add_argument('-s', '--device_source', type = str)
+# ['ssd_1T', 'ssd_2T']
 args = parser.parse_args()
 
 def run_task(method, graph_path, output_path, idx):
@@ -32,6 +34,7 @@ def main():
     method = args.method
     dataset = args.dataset
     user = args.user
+    device_source = args.device_source
 #     root_dir = '/home/mlsnrs/apks/ssd_1T/mamadroid/light_weight_dataset/%s' % method
     if user == 'mlsnrs':
         root_dir_prefix = '/home/mlsnrs/apks'
@@ -40,9 +43,9 @@ def main():
 #         dataset_dir = '/home/mlsnrs/apks/VirusShare/dataset_s_baseline/%s' % dataset
     elif user == 'shellhand':
         root_dir_prefix = '/mnt'
-    root_dir = '%s/ssd_1T/mamadroid/%s/%s' % (root_dir_prefix, dataset, method)
+    root_dir = '%s/%s/mamadroid/%s/%s' % (root_dir_prefix, device_source, dataset, method)
     dataset_list = []
-    dataset_dir = '/mnt/VirusShare/dataset_s_baseline/%s' % dataset        
+    dataset_dir = '%s/VirusShare/dataset_s_baseline/%s' % (root_dir_prefix, dataset)        
     for file_name in os.listdir(dataset_dir):
         with open(os.path.join(dataset_dir, file_name), 'r') as f:
             reader = csv.reader(f) 
