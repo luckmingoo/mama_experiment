@@ -110,9 +110,19 @@ def main6():
 #         log_list.append('./log/' + label + '12_10.txt')
 #     labels = ['mamadroid_origin_450', 'mamadroid_metaknowledge']
     visual_data(log_list, labels)  
+def main7():
+    dataset = 'dataset_20132014'
+    labels = ['450_package', 'cluster_v0']# ['450_package', 'cluster_v0'] # 'manual_package_v0', 'manual_package_v1', 
+#     labels = ['origin', 'bagging'] # , 'bagging','validation'
+    log_list = []
+    for label in labels:
+        log_list.append('./log/'  + dataset+ '_' + label + '_evaluation.txt')
+#         log_list.append('./log/' + label + '12_10.txt')
+#     labels = ['mamadroid_origin_450', 'mamadroid_metaknowledge']
+    visual_data(log_list, labels)  
 
 if __name__ == "__main__":
 #     main2()
 #     main1()
 #     main3()    
-    main6()
+    main7()
