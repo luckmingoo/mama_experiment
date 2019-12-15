@@ -43,7 +43,7 @@ def main():
 #         dataset_dir = '/home/mlsnrs/apks/VirusShare/dataset_s_baseline/%s' % dataset
     elif user == 'shellhand':
         root_dir_prefix = '/mnt'
-    root_dir = '%s/%s/mamadroid/%s/%s' % (root_dir_prefix, device_source, dataset, method)
+    root_dir = '%s/%s/mamadroid/%s' % (root_dir_prefix, device_source, method)
     dataset_list = []
     dataset_dir = '%s/VirusShare/dataset_s_baseline/%s' % (root_dir_prefix, dataset)        
     for file_name in os.listdir(dataset_dir):
