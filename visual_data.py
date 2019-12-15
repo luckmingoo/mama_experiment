@@ -119,7 +119,8 @@ def main7():
         log_list.append('./log/'  + dataset+ '_' + label + '_evaluation.txt')
 #         log_list.append('./log/' + label + '12_10.txt')
 #     labels = ['mamadroid_origin_450', 'mamadroid_metaknowledge']
-    visual_data(log_list, labels)  
+    visual_data(log_list, labels) 
+ 
 
 if __name__ == "__main__":
 #     main2()
