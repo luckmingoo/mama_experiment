@@ -14,7 +14,7 @@ import random
 
 
 def split_new_dataset():
-    dataset_dir = '/home/mlsnrs/apks/VirusShare/dataset_s_baseline/dataset_20162017/'
+    dataset_dir = '/mnt/VirusShare/dataset_s_baseline/dataset_20172018/'
     year_2013_txt = ['train_00_filename.txt', 'test_00_filename.txt']
     year_2014_txt = ['test_%02d_filename.txt' % (_ + 1) for _ in range(12)]
     
@@ -72,7 +72,7 @@ def split_new_dataset():
             rand_idx = random.randint(0, len(year_2014_data[i][1]) - 1)
             row = year_2014_data[i][1].pop(rand_idx)
             test_data[i + 1].append(row)
-    save_dir = '/home/mlsnrs/apks/VirusShare/dataset_s_baseline/dataset_20162017_light_weight'
+    save_dir = '/mnt/VirusShare/dataset_s_baseline/dataset_20172018_light_weight'
     if not os.path.exists(save_dir):
         os.mkdir(save_dir)
     with open(os.path.join(save_dir, 'train_00_filename.txt'), 'wb') as f:

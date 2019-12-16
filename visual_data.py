@@ -122,7 +122,7 @@ def main7():
     visual_data(log_list, labels) 
  
 def main8():
-    dataset = 'dataset_20162017'
+    dataset = 'dataset_20132014_light_weight'
     labels = ['450_package', 'cluster_v0']# ['450_package', 'cluster_v0'] # 'manual_package_v0', 'manual_package_v1', 
 #     labels = ['origin', 'bagging'] # , 'bagging','validation'
     log_list = []

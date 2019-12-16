@@ -64,7 +64,8 @@ def save_feature_to_pickle(method, dataset, user, device_source):
         root_dir_prefix = '/home/mlsnrs/apks'
     elif user == 'shellhand':
         root_dir_prefix = '/mnt'
-    root_dir = '%s/%s/mamadroid/%s/%s' % (root_dir_prefix, device_source, dataset, method)
+    root_input_dir = '%s/%s/mamadroid/%s' % (root_dir_prefix, device_source, method)
+    root_output_dir = '%s/%s/mamadroid/%s/%s' % (root_dir_prefix, device_source, dataset, method)
     dataset_dir = '%s/VirusShare/dataset_s_baseline/%s' % (root_dir_prefix, dataset)
     dataset = {}
     for file_name in os.listdir(dataset_dir):
@@ -88,7 +89,7 @@ def save_feature_to_pickle(method, dataset, user, device_source):
             md5 = row[1]
             firstseen = row[2]
             fs_year = int(firstseen.split('-')[0])
-            feature_csv_path = os.path.join(root_dir, 'feature/{}/{}_{}.csv'.format(fs_year, method, md5))
+            feature_csv_path = os.path.join(root_input_dir, 'feature/{}/{}_{}.csv'.format(fs_year, method, md5))
             if not os.path.exists(feature_csv_path):
                 continue
 #                 print(feature_csv_path)
@@ -114,12 +115,13 @@ def save_feature_to_pickle(method, dataset, user, device_source):
                 mamadroid_feature_list = []
         if mamadroid_feature_list:
             mamadroid_feature_numpy = np.concatenate((mamadroid_feature_numpy,np.array(mamadroid_feature_list, dtype = np.float16)), axis=0)
-        save_pickle_dir = os.path.join(root_dir, 'save_pickle')
+        save_pickle_dir = os.path.join(root_output_dir, 'save_pickle')
         if not os.path.exists(save_pickle_dir):
-            os.mkdir(save_pickle_dir)
-        with open(os.path.join(root_dir, 'save_pickle/{}.jlb'.format(file_name.replace('.txt', ''))), 'wb') as f:
+            os.makedirs(save_pickle_dir, 0775)
+#             os.mkdir(save_pickle_dir)
+        with open(os.path.join(root_output_dir, 'save_pickle/{}.jlb'.format(file_name.replace('.txt', ''))), 'wb') as f:
             joblib.dump(mamadroid_feature_numpy, f)
-    with open(os.path.join(root_dir, '{}_save_feature_list.csv'.format(method)), 'wb') as f:
+    with open(os.path.join(root_output_dir, '{}_save_feature_list.csv'.format(method)), 'wb') as f:
         writer = csv.writer(f) 
         writer.writerows(save_feature_list)
     
