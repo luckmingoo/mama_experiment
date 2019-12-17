@@ -136,6 +136,7 @@ def extract_packages_feature(wholefile):
                    [1, "android.os.User"], [1, "android.os.Vibra"]], 
                   ["android.os.BatteryManager", "android.os.Binder", "android.os.Build", "android.os.Bundle",
                    "android.os.BaseBundle", "android.os.CpuUsageInfo", "android.os.Debug", "android.os.File",
+                   "android.os.Handler", "android.os.Message", "android.os.Parcel", "android.os.PowerManager",
                    "android.os.Process", "android.os.SharedMemory", "android.os.StrictMode", "android.os.SystemClock",
                    "android.os.User", "android.os.Vibra"]],
     "android.provider":[[[1, "android.provider.Calendar"], [1, "android.provider.Contacts"], [1, "android.provider.Media"], [1, "android.provider.Telephony"]], 

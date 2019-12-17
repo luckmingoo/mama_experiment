@@ -102,7 +102,7 @@ def main5():
     visual_data(log_list, labels)  
 
 def main6():
-    labels = ['dataset_20132014_cluster_v0', 'dataset_20132014_light_weight_cluster_v0']# ['450_package', 'cluster_v0'] # 'manual_package_v0', 'manual_package_v1', 
+    labels = ['dataset_20162017_cluster_v0', 'dataset_20162017_450_package']# ['450_package', 'cluster_v0'] # 'manual_package_v0', 'manual_package_v1', 
 #     labels = ['origin', 'bagging'] # , 'bagging','validation'
     log_list = []
     for label in labels:
@@ -122,7 +122,7 @@ def main7():
     visual_data(log_list, labels) 
  
 def main8():
-    dataset = 'dataset_20132014_light_weight'
+    dataset = 'dataset_20172018_light_weight'
     labels = ['450_package', 'cluster_v0']# ['450_package', 'cluster_v0'] # 'manual_package_v0', 'manual_package_v1', 
 #     labels = ['origin', 'bagging'] # , 'bagging','validation'
     log_list = []
@@ -136,4 +136,4 @@ if __name__ == "__main__":
 #     main2()
 #     main1()
 #     main3()    
-    main8()
+    main6()
