@@ -45,7 +45,7 @@ def visual_data(log_list, labels):
         plt.plot(x[0:], y[0:], 'o-', label = labels[i])
     plt.title('f1')
     for i, label in enumerate(labels):
-        plt.text(6.5, 0.71 + 0.03*i, '%s AUT: %.4f' % (label, AUTs[i]))
+        plt.text(4.5, 0.71 + 0.03*i, '%s AUT: %.4f' % (label, AUTs[i]))
     plt.legend()
     plt.savefig('f1.png', dpi = 150)
 
@@ -102,7 +102,7 @@ def main5():
     visual_data(log_list, labels)  
 
 def main6():
-    labels = ['dataset_20162017_cluster_v0', 'dataset_20162017_450_package']# ['450_package', 'cluster_v0'] # 'manual_package_v0', 'manual_package_v1', 
+    labels = ['dataset_20162017_cluster_v0', 'dataset_20162017_450_package', 'dataset_20162017_manual_package_v4']# ['450_package', 'cluster_v0'] # 'manual_package_v0', 'manual_package_v1', 
 #     labels = ['origin', 'bagging'] # , 'bagging','validation'
     log_list = []
     for label in labels:
@@ -122,18 +122,20 @@ def main7():
     visual_data(log_list, labels) 
  
 def main8():
-    dataset = 'dataset_20172018_light_weight'
-    labels = ['450_package', 'cluster_v0']# ['450_package', 'cluster_v0'] # 'manual_package_v0', 'manual_package_v1', 
+    dataset = 'dataset_20132014_light_weight'
+    labels = ['450_package', 'cluster_v0', 'manual_package_v4']# ['450_package', 'cluster_v0'] # 'manual_package_v0', 'manual_package_v1', 
 #     labels = ['origin', 'bagging'] # , 'bagging','validation'
     log_list = []
+    new_labels = []
     for label in labels:
         log_list.append('./log/'  + dataset+ '_' + label + '_evaluation.txt')
+        new_labels.append(dataset + '_' + label)
 #         log_list.append('./log/' + label + '12_10.txt')
 #     labels = ['mamadroid_origin_450', 'mamadroid_metaknowledge']
-    visual_data(log_list, labels) 
+    visual_data(log_list, new_labels) 
 
 if __name__ == "__main__":
 #     main2()
 #     main1()
 #     main3()    
-    main6()
+    main8()

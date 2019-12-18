@@ -13,6 +13,127 @@ import csv
 import random
 
 
+def split_all_month_dataset():
+    benign_dataset = '/mnt/AndroZoo/GooglePlay_firstseen/apks_benign_hash_path_100w.csv'
+    malicious_dataset = '/mnt/VirusShare/malware_dataset_vs_vt_amd.csv'
+    dataset = [[[[] for _ in range(2)] for month in range(0,12)] for year in range(2012, 2019)]
+    dataset_md5_dict = {}
+    with open(benign_dataset, 'r') as f:
+        reader = csv.reader(f) 
+        for row in reader:
+            md5 = row[0]
+            first_seen = row[1]
+            dataset_md5_dict[md5] = first_seen
+            fs_year = int(first_seen.split('-')[0])
+            fs_month = int(first_seen.split('-')[1])
+            dataset[fs_year - 2012][fs_month - 1][0].append(md5)
+    with open(malicious_dataset, 'r') as f:
+        reader = csv.reader(f) 
+        for row in reader:
+            md5 = row[0]
+            first_seen = row[1]
+            dataset_md5_dict[md5] = first_seen
+            fs_year = int(first_seen.split('-')[0])
+            fs_month = int(first_seen.split('-')[1])
+            dataset[fs_year - 2012][fs_month - 1][1].append(md5)
+    selected_dataset = [[[] for month in range(0, 12)] for year in range(2012, 2019)]
+    for year in range(2012, 2019):
+        print(year),
+        for month in range(0, 12):
+            benign_len = min(len(dataset[year - 2012][month][0]), 3600)
+            malicious_len = min(len(dataset[year - 2012][month][1]), 400)
+            selected_benign_len = min(benign_len, malicious_len*9)
+            selected_malicious_len = min(int(benign_len/9), malicious_len)
+            for i in range(selected_benign_len):
+                random_idx = random.randint(0, len(dataset[year - 2012][month][0]) - 1)
+                md5 = dataset[year - 2012][month][0].pop(random_idx)
+                selected_dataset[year - 2012][month].append([0, md5, dataset_md5_dict[md5]])
+            for i in range(selected_malicious_len):
+                random_idx = random.randint(0, len(dataset[year - 2012][month][1]) - 1)
+                md5 = dataset[year - 2012][month][1].pop(random_idx)
+                selected_dataset[year - 2012][month].append([1, md5, dataset_md5_dict[md5]])
+            print(len(selected_dataset[year - 2012][month])),
+        print('')
+    dataset_save_dir = '/mnt/VirusShare/dataset_s_baseline/dataset_all_month_4k'
+    if not os.path.exists(dataset_save_dir):
+        os.mkdir(dataset_save_dir)
+    for year in range(2012, 2019):
+        for month in range(0, 12):
+            save_filename = '%d%02d_filename.txt' % (year, month + 1)
+            with open(os.path.join(dataset_save_dir, save_filename), 'wb') as f:
+                writer = csv.writer(f) 
+                writer.writerows(selected_dataset[year - 2012][month])
+    print('finish')
+
+def add_all_month_dataset():
+    selected_dataset = [[[] for month in range(0, 12)] for year in range(2012, 2019)]
+    have_selected_md5 = set()
+    selected_dataset_dir = '/mnt/VirusShare/dataset_s_baseline/dataset_all_month_4k'
+    for year in range(2012, 2019):
+        for month in range(0, 12):
+            save_filename = '%d%02d_filename.txt' % (year, month + 1)
+            with open(os.path.join(selected_dataset_dir, save_filename), 'r') as f:
+                reader = csv.reader(f)
+                for row in reader:
+                    label = int(row[0])
+                    md5 = row[1]
+                    first_seen = row[2]
+                    have_selected_md5.add(md5)
+                    selected_dataset[year - 2012][month].append([label, md5, first_seen])
+    
+    benign_dataset = '/mnt/AndroZoo/GooglePlay_firstseen/apks_benign_hash_path_100w.csv'
+    malicious_dataset = '/mnt/VirusShare/malware_dataset_vs_vt_amd.csv'
+    dataset = [[[[] for _ in range(2)] for month in range(0,12)] for year in range(2012, 2019)]
+    dataset_md5_dict = {}
+    with open(benign_dataset, 'r') as f:
+        reader = csv.reader(f) 
+        for row in reader:
+            md5 = row[0]
+            first_seen = row[1]
+            dataset_md5_dict[md5] = first_seen
+            fs_year = int(first_seen.split('-')[0])
+            fs_month = int(first_seen.split('-')[1])
+            if md5 not in have_selected_md5:
+                dataset[fs_year - 2012][fs_month - 1][0].append(md5)
+    with open(malicious_dataset, 'r') as f:
+        reader = csv.reader(f) 
+        for row in reader:
+            md5 = row[0]
+            first_seen = row[1]
+            dataset_md5_dict[md5] = first_seen
+            fs_year = int(first_seen.split('-')[0])
+            fs_month = int(first_seen.split('-')[1])
+            if md5 not in have_selected_md5:
+                dataset[fs_year - 2012][fs_month - 1][1].append(md5)
+    for year in range(2012, 2019):
+        print(year),
+        for month in range(0, 12):
+            benign_len = min(len(dataset[year - 2012][month][0]), 900)
+            malicious_len = min(len(dataset[year - 2012][month][1]), 100)
+            selected_benign_len = min(benign_len, malicious_len*9)
+            selected_malicious_len = min(int(benign_len/9), malicious_len)
+            for i in range(selected_benign_len):
+                random_idx = random.randint(0, len(dataset[year - 2012][month][0]) - 1)
+                md5 = dataset[year - 2012][month][0].pop(random_idx)
+                selected_dataset[year - 2012][month].append([0, md5, dataset_md5_dict[md5]])
+            for i in range(selected_malicious_len):
+                random_idx = random.randint(0, len(dataset[year - 2012][month][1]) - 1)
+                md5 = dataset[year - 2012][month][1].pop(random_idx)
+                selected_dataset[year - 2012][month].append([1, md5, dataset_md5_dict[md5]])
+            print(len(selected_dataset[year - 2012][month])),
+        print('')
+    dataset_save_dir = '/mnt/VirusShare/dataset_s_baseline/dataset_all_month_5k'
+    if not os.path.exists(dataset_save_dir):
+        os.mkdir(dataset_save_dir)
+    for year in range(2012, 2019):
+        for month in range(0, 12):
+            save_filename = '%d%02d_filename.txt' % (year, month + 1)
+            with open(os.path.join(dataset_save_dir, save_filename), 'wb') as f:
+                writer = csv.writer(f) 
+                writer.writerows(selected_dataset[year - 2012][month])
+    print('finish')    
+
+
 def split_new_dataset():
     dataset_dir = '/mnt/VirusShare/dataset_s_baseline/dataset_20172018/'
     year_2013_txt = ['train_00_filename.txt', 'test_00_filename.txt']
@@ -87,4 +208,6 @@ def split_new_dataset():
     
 
 if __name__ == "__main__":
-    split_new_dataset()
+#     split_new_dataset()
+#     split_all_month_dataset()
+    add_all_month_dataset()
