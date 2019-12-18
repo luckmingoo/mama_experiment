@@ -21,7 +21,7 @@ def run_task(source_path, dest_dir, idx):
 
 def main():
     dataset_list = []
-    dataset_dir = '/mnt/VirusShare/dataset_s_baseline/dataset_all_month'
+    dataset_dir = '/mnt/VirusShare/dataset_s_baseline/dataset_all_month_5k'
     for file_name in os.listdir(dataset_dir):
         file_abs_path = os.path.join(dataset_dir, file_name)
         with open(file_abs_path, 'r') as f:
