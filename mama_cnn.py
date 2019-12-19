@@ -14,7 +14,7 @@ import time
 import os 
 import math
 import argparse
-from sklearn.externals import joblib
+import joblib
 from sklearn.metrics import confusion_matrix
 from cnn_model import CNN
 import torch

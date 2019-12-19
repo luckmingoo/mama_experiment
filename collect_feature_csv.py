@@ -64,8 +64,8 @@ def save_feature_to_pickle(method, dataset, user, device_source):
         root_dir_prefix = '/home/mlsnrs/apks'
     elif user == 'shellhand':
         root_dir_prefix = '/mnt'
-    root_input_dir = '%s/%s/mamadroid/%s' % (root_dir_prefix, device_source, method)
-    root_output_dir = '%s/%s/mamadroid/%s/%s' % (root_dir_prefix, device_source, dataset, method)
+    root_input_dir = '%s/ssd_2T/mamadroid/%s' % (root_dir_prefix, method)
+    root_output_dir = '%s/ssd_1T/mamadroid/%s/%s' % (root_dir_prefix, dataset, method)
     dataset_dir = '%s/VirusShare/dataset_s_baseline/%s' % (root_dir_prefix, dataset)
     dataset = {}
     for file_name in os.listdir(dataset_dir):
@@ -75,7 +75,8 @@ def save_feature_to_pickle(method, dataset, user, device_source):
             for row in reader:
                 label = int(row[0])
                 if label != 2:
-                    md5 = row[1].split('/')[1]
+#                     md5 = row[1].split('/')[1]
+                    md5 = row[1]
                     firstseen = row[2]
                     dataset[file_name].append([label, md5, firstseen])
     

@@ -52,7 +52,8 @@ def main():
             for row in reader:
                 label = int(row[0])
                 if label != 2:
-                    md5 = row[1].split('/')[1]
+#                     md5 = row[1].split('/')[1]
+                    md5 = row[1]
                     fs_year = int(row[2].split('-')[0])
                     dataset_list.append([label, md5, fs_year])
     p = Pool(25)
@@ -62,10 +63,12 @@ def main():
         label = row[0]
         md5 = row[1]
         fs_year = row[2]
-        if label == 0:
-            graph_path = '{}/AndroZoo/result_benign_soot/benign_{}/graphs/{}.txt'.format(root_dir_prefix, fs_year, md5)
-        elif label == 1:
-            graph_path = '{}/AndroZoo/result_malware_soot/malware_{}/graphs/{}.txt'.format(root_dir_prefix, fs_year, md5)
+        graph_path = '{}/ssd_2T/mamadroid/soot_result/{}/{}.txt'.format(root_dir_prefix, fs_year, md5)
+#         if label == 0:
+#             graph_path = '{}/AndroZoo/result_benign_soot/benign_{}/graphs/{}.txt'.format(root_dir_prefix, fs_year, md5)
+#             graph_path = '{}/soot_result/{}/{}.txt'.format(root_dir_prefix, fs_year, md5) 
+#         elif label == 1:
+#             graph_path = '{}/AndroZoo/result_malware_soot/malware_{}/graphs/{}.txt'.format(root_dir_prefix, fs_year, md5)           
         output_dir = os.path.join(root_dir, 'feature/{}'.format(fs_year))
         if not os.path.exists(output_dir):
             os.makedirs(output_dir, 0775)
