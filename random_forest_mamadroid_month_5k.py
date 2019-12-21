@@ -46,7 +46,7 @@ def get_test_data(dataset, test_year, test_month, method, save_feature_dict, roo
     tmp_x_test = []
     tmp_y_test = []
     test_data_md5 = []
-    test_file  = '%d%02d_filename.txt' % (test_year, test_month)
+    test_file  = '%d%02d_filename.txt' % (test_year, test_month + 1)
     with open(os.path.join(test_data_dir, test_file), 'r') as f:
         reader = csv.reader(f) 
         for row in reader:
@@ -85,7 +85,7 @@ def get_train_data(dataset, train_year, method, save_feature_dict, root_dir_pref
     tmp_y_train = []
     for train_month in range(0, 12):
         train_data_md5 = []
-        train_file  = '%d%02d_filename.txt' % (train_year, train_month)
+        train_file  = '%d%02d_filename.txt' % (train_year, train_month + 1)
         with open(os.path.join(train_data_dir, train_file), 'r') as f:
             reader = csv.reader(f) 
             for row in reader:

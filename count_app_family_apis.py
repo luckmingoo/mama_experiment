@@ -9,6 +9,7 @@ Created on 2019-12-19
 '''
 import os 
 import csv 
+import matplotlib.pyplot as plt
 
 def get_medium_year_month(min_year_month, max_year_month):
     if min_year_month > max_year_month:
@@ -83,18 +84,59 @@ def diff_two_part_api_count(part_01_count_list, part_02_count_list): # [api, ave
         api = row[0]
         average_cnt = row[1]
         part_02_dict[api] = average_cnt
-    sensitive_diff_cnt_dict = {}
-    nonsensitive_diff_cnt_dict = {}
+    sensitive_diff_cnt_list = []
+    nonsensitive_diff_cnt_list = []
     all_api_set = set(part_01_dict.keys()) | set(part_02_dict.keys())
     for api in all_api_set:
         part_01_cnt = part_01_dict.get(api, 0)
         part_02_cnt = part_02_dict.get(api, 0)
         diff_cnt = abs(part_01_cnt - part_02_cnt)
         if api in sensitive_api_set:
-            sensitive_diff_cnt_dict[api] = diff_cnt
+            sensitive_diff_cnt_list.append([api, diff_cnt])
         else:
-            nonsensitive_diff_cnt_dict[api] = diff_cnt
-    return sensitive_api_set, nonsensitive_diff_cnt_dict
+            nonsensitive_diff_cnt_list.append([api, diff_cnt])
+    sensitive_diff_cnt_list.sort(key = lambda x:x[1], reverse = True)
+    nonsensitive_diff_cnt_list.sort(key = lambda x:x[1], reverse = True)
+    return sensitive_diff_cnt_list, nonsensitive_diff_cnt_list
+
+def get_y_label(bound_list):
+    y_labels = []
+    for i in range(len(bound_list)):
+        if i != (len(bound_list) - 1):
+            y_label = '%.1f~%.1f' % (bound_list[i], bound_list[i+1])
+        else:
+            y_label = 'above %.1f' % (bound_list[i])
+        y_labels.append(y_label)
+    return y_labels
+    
+def plot_diff_bar(sensitive_diff_cnt_list, nonsensitive_diff_cnt_list, save_name):
+    bound_list = [0, 0.1, 0.5, 1, 5, 20]
+    sensitive_cnt_bar_list = [0 for _ in range(len(bound_list))]
+    nonsensitive_cnt_bar_list = [0 for _ in range(len(bound_list))]
+    for row in sensitive_diff_cnt_list:
+        average_cnt = row[1]
+        idx = 0
+        while idx < len(bound_list):
+            if average_cnt <= bound_list[idx]:
+                break
+            idx += 1
+        sensitive_cnt_bar_list[idx - 1] += 1
+    for row in nonsensitive_diff_cnt_list:
+        average_cnt = row[1]
+        idx = 0
+        while idx < len(bound_list):
+            if average_cnt < bound_list[idx]:
+                break
+            idx += 1
+        nonsensitive_cnt_bar_list[idx - 1] += 1
+    y_labels = get_y_label(bound_list)
+    print('sensitive cnt list: %s nonsensitive cnt list: %s' % (sensitive_cnt_bar_list, nonsensitive_cnt_bar_list) )
+    plt.cla()
+    plt.bar(y_labels, sensitive_cnt_bar_list, fc='r', label = 'sensitive')
+    plt.bar(y_labels, nonsensitive_cnt_bar_list, fc='g', label = 'nonsensitive', bottom=sensitive_cnt_bar_list)
+    plt.title(save_name)
+    plt.legend()
+    plt.savefig("api_count/%s.png" % save_name)
     
     
 def count_apis():
@@ -114,7 +156,7 @@ def count_apis():
                 family_app[family_name] = []
             first_year_month = int(first_seen.split('-')[0] + first_seen.split('-')[1])
             family_app[family_name].append([md5, first_year_month])
-    for family_name in ["Mecor", "Dowgin"]:
+    for family_name in ["Mecor", "Dowgin", "Airpush", "Kuguo", "DroidKungFu", "Youmi", "FakeInst", "Jisut"]:
         family_app[family_name].sort(key = lambda x:x[1])
         min_year_month = family_app[family_name][0][1]
         max_year_month = family_app[family_name][-1][1]
@@ -143,6 +185,7 @@ def count_apis():
         with open('api_count/%s_diff_cnt_nonsensitive.csv' % family_name, 'wb') as f:
             writer = csv.writer(f) 
             writer.writerows(nonsensitive_diff_cnt)
+        plot_diff_bar(sensitive_diff_cnt, nonsensitive_diff_cnt, '%s_diff_api_count' % family_name)
 
 if __name__ == "__main__":
     count_apis()

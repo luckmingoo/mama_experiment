@@ -1,0 +1,15 @@
+android.os.Environment->getExternalStorageDirectory,0.2205627902741094
+android.net.ConnectivityManager->getNetworkInfo,0.21720471723886714
+android.content.ContentResolver->query,0.11626901010836901
+android.webkit.WebSettings->setGeolocationEnabled,0.10860235861943357
+java.net.URLConnection->getInputStream,0.10860235861943354
+java.net.URLConnection->connect,0.10860235861943354
+android.app.Activity->setRequestedOrientation,0.0937869957198798
+java.lang.reflect.Method->invoke,0.05998429104817404
+java.lang.reflect.InvocationTargetException->toString,0.058618295237227946
+android.content.Context->getExternalCacheDir,0.05813450505418451
+java.lang.Runtime->getRuntime,0.05813450505418451
+java.lang.Runtime->maxMemory,0.05813450505418451
+java.lang.reflect.Array->newInstance,0.05813450505418451
+java.lang.reflect.InvocationTargetException->printStackTrace,0.0013659958109461796
+android.app.NotificationManager->notify,0.0
