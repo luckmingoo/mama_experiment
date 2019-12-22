@@ -159,7 +159,7 @@ def extract_packages_feature(wholefile):
             Packetsline.append(match)
         if Packetsline:
             Packetsfile.append(Packetsline)
-#     with open('tmp_cluster_simplified_v0.txt', 'w') as f:
+#     with open('tmp_evecluster_simplified_v0.txt', 'w') as f:
 #         for line in Packetsfile:
 #             f.write('\t'.join(line))
 #             f.write('\n')
@@ -168,7 +168,7 @@ def extract_packages_feature(wholefile):
 def markov_feature(features, output_path):
     PACKETS=[]
     for i in range(1000):
-        PACKETS.append('cluster_%d.txt' % i)
+        PACKETS.append('cluster_%d' % i)
     allnodes=PACKETS
     allnodes.append('selfdefined')
     allnodes.append('obfuscated')

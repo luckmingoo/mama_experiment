@@ -15,7 +15,7 @@ import csv
 def generate_method_evecluster_mapping():
     current_method_min_len_dict = {}
     method_evecluster_mapping = {}
-    cluster_txt_dir = '/home/shellhand/mamadroid_RF_PAC_Bayesian/log_12_20/cluster1000_1220'
+    cluster_txt_dir = '/home/shellhand/mamadroid_RF_PAC_Bayesian/evedroid1221/cluster1000_1221'
     for i in range(1000):
         cluster_txt_path = os.path.join(cluster_txt_dir, 'cluster_%03d.txt' % i)
         with open(cluster_txt_path, 'r') as f:

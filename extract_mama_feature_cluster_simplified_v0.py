@@ -198,7 +198,7 @@ if __name__ == "__main__":
     graph_path = args.source
     output_path = args.output
 #     graph_path = '92f3ae12c953d6f1f057dfacb070c358.txt'
-#     output_path = '92f3ae12c953d6f1f057dfacb070c358.csv'
+#     output_path = 'tmp_92f3ae12c953d6f1f057dfacb070c358.csv'
     start = time.time()
     if os.path.exists(graph_path) and not os.path.exists(output_path):
         extract_mama_feature(graph_path, output_path)
