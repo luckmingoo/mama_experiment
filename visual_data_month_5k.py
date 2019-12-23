@@ -9,6 +9,8 @@ Created on 2019-12-11
 '''
 
 import os
+import matplotlib
+matplotlib.use('AGG')
 from matplotlib import pyplot as plt
 import numpy as np
 
@@ -104,7 +106,7 @@ def main_average_f1():
 
 def main_average_f1_according_raw_data():
     dataset = 'dataset_all_month_5k'
-    labels = ['450_package', 'cluster_simplified_v0']# ['450_package', 'cluster_v0'] # 'manual_package_v0', 'manual_package_v1', 
+    labels = ['450_package', 'cluster_simplified_v0', 'evecluster_simplified_v0']# ['450_package', 'cluster_v0'] # 'manual_package_v0', 'manual_package_v1', 
     x_list = ['train']
     for i in range(12):
         x_list.append('%02d' % (i+1))
@@ -155,7 +157,7 @@ def main_average_f1_according_raw_data():
  
 def main():
     dataset = 'dataset_all_month_5k'
-    labels = ['450_package', 'cluster_simplified_v0']# ['450_package', 'cluster_v0'] # 'manual_package_v0', 'manual_package_v1', 
+    labels = ['450_package', 'cluster_simplified_v0', 'evecluster_simplified_v0']# ['450_package', 'cluster_v0'] # 'manual_package_v0', 'manual_package_v1', 
     for year in range(2012,2018):
         log_list = []
         new_labels = []
