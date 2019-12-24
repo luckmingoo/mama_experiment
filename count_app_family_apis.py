@@ -9,7 +9,10 @@ Created on 2019-12-19
 '''
 import os 
 import csv 
+import matplotlib
+matplotlib.use('AGG')
 import matplotlib.pyplot as plt
+import numpy as np
 
 def get_medium_year_month(min_year_month, max_year_month):
     if min_year_month > max_year_month:
@@ -187,6 +190,178 @@ def count_apis():
             writer.writerows(nonsensitive_diff_cnt)
         plot_diff_bar(sensitive_diff_cnt, nonsensitive_diff_cnt, '%s_diff_api_count' % family_name)
 
+def count_apis_malware():
+    seq_path_dict = get_seq_path_dict()
+    malware_dataset_path = 'dataset_family_filted.csv' # [md5, family, support_num, first_seen, vt_cnt]
+    family_app = {} # key = family_name, value = [[md5, first_year_month]
+    with open(malware_dataset_path, 'r') as f:
+        reader = csv.reader(f)
+        for row in reader:
+            md5 = row[0]
+            if md5 not in seq_path_dict:
+                continue
+            first_seen = row[3]
+            family_name = row[1]
+            if family_name not in family_app:
+                family_app[family_name] = []
+            first_year_month = int(first_seen.split('-')[0] + first_seen.split('-')[1])
+            family_app[family_name].append([md5, first_year_month])
+    for family_name in ['airpush', 'smsreg', 'fakeinst', 'gappusin', 'youmi', 'dowgin', 'adwo', 'kuguo', 'secapk', 'droidkungfu']:
+        family_app[family_name].sort(key = lambda x:x[1])
+        min_year_month = family_app[family_name][0][1]
+        max_year_month = family_app[family_name][-1][1]
+        medium_year_month = get_medium_year_month(min_year_month, max_year_month)
+        part_01 = []
+        part_02 = []
+        for row in family_app[family_name]:
+            first_year_month = row[1]
+            if first_year_month < medium_year_month:
+                part_01.append(row)
+            else:
+                part_02.append(row)
+        print("%s part 01: %d part 02: %d" % (family_name, len(part_01), len(part_02)))
+        part_01_api_count_list = analyze_apis(part_01, seq_path_dict)
+        part_02_api_count_list = analyze_apis(part_02, seq_path_dict)
+        with open('api_count/malware_%s_part_01_count.csv' % (family_name), 'wb') as f:
+            writer = csv.writer(f) 
+            writer.writerows(part_01_api_count_list)
+        with open('api_count/malware_%s_part_02_count.csv' % (family_name), 'wb') as f:
+            writer = csv.writer(f) 
+            writer.writerows(part_02_api_count_list)
+        sensitive_diff_cnt, nonsensitive_diff_cnt = diff_two_part_api_count(part_01_api_count_list, part_02_api_count_list)
+        with open('api_count/malware_%s_diff_cnt_sensitive.csv' % family_name, 'wb') as f:
+            writer = csv.writer(f) 
+            writer.writerows(sensitive_diff_cnt)
+        with open('api_count/malware_%s_diff_cnt_nonsensitive.csv' % family_name, 'wb') as f:
+            writer = csv.writer(f) 
+            writer.writerows(nonsensitive_diff_cnt)
+        plot_diff_bar(sensitive_diff_cnt, nonsensitive_diff_cnt, 'malware_%s_diff_api_count' % family_name)
+
+def update_stop_time(period_start_year_month, one_period):
+    min_year = int(period_start_year_month/100)
+    min_month = int(period_start_year_month%100)
+    family_time_stop_year = min_year + int((min_month + one_period)/13)
+    tmp_month = (min_month + one_period)
+    if tmp_month == 12:  
+        family_time_stop_month =  tmp_month
+    else:
+        family_time_stop_month = tmp_month%12
+    period_end_year_month = int('%d%02d' % (family_time_stop_year, family_time_stop_month)) 
+    return period_end_year_month 
+
+def diff_two_period(period_left, period_right):
+    delete_api_set = period_left - period_right
+    common_api_set = period_left & period_right
+    add_api_set = period_right - period_left
+    return delete_api_set, common_api_set, add_api_set
+
+def parse_family_app_periods(family_app_periods, seq_path_dict, family_name):
+    periods_api = []
+    lldroid_output = '/mnt/VirusShare/lldroid_output/'
+    idx = 0
+    diff_period = []
+    diff_all_period = []
+    previous_api_set = set()
+    for period in family_app_periods:
+        period_time = period[0]
+        period_app_list = period[1]
+        cnt = 0
+        period_api_set = set()
+        for row in period_app_list:
+            md5 = row[0]
+            seq_path = seq_path_dict[md5]
+            seq_abspath = os.path.join(lldroid_output, seq_path)
+            if os.path.exists(seq_abspath):
+                cnt += 1
+                with open(seq_abspath, 'r') as f:
+                    apis = [line.strip() for line in f.readlines()]
+                    for api in apis:
+                        api = api.strip()
+                        period_api_set.add(api)
+            else:
+                print('not exist: %s' % (seq_abspath))
+        periods_api.append(period_api_set)
+        if idx != 0:
+            delete_api_set, common_api_set, add_api_set = diff_two_period(periods_api[idx - 1], periods_api[idx])
+            diff_period.append([period_time, len(delete_api_set), len(common_api_set), len(add_api_set)])
+            
+            delete_previous_api_set, common_previous_api_set, add_previous_api_set = diff_two_period(previous_api_set, period_api_set)
+            diff_all_period.append([period_time, len(delete_previous_api_set), len(common_previous_api_set), len(add_previous_api_set)])
+        previous_api_set.update(period_api_set)
+        idx += 1
+    plt.cla()
+    plt.figure(figsize = (10, 8))
+    x_label = [_[0].split('-')[0] for _ in diff_period]
+    delete_y_value = np.array([_[1] for _ in diff_period])
+    common_y_value = np.array([_[2] for _ in diff_period])
+    add_y_value = np.array([_[3] for _ in diff_period])
+    plt.bar(x_label, delete_y_value, fc = 'r', label = 'delete apis')
+    plt.bar(x_label, common_y_value, fc = 'g', label = 'common apis', bottom = delete_y_value)
+    plt.bar(x_label, add_y_value, fc = 'b', label = 'add apis', bottom = delete_y_value + common_y_value)
+    plt.tick_params(labelsize=5)
+    plt.legend()
+    plt.title('malware %s period diff' % family_name)
+    plt.savefig('api_count/malware_%s_period_diff.png' % family_name, dpi = 200)
+    
+    plt.cla()
+    plt.figure(figsize = (10, 8))
+    x_label = [_[0].split('-')[0] for _ in diff_all_period]
+    delete_y_value = np.array([_[1] for _ in diff_all_period])
+    common_y_value = np.array([_[2] for _ in diff_all_period])
+    add_y_value = np.array([_[3] for _ in diff_all_period])
+    plt.bar(x_label, delete_y_value, fc = 'r', label = 'delete apis')
+    plt.bar(x_label, common_y_value, fc = 'g', label = 'common apis', bottom = delete_y_value)
+    plt.bar(x_label, add_y_value, fc = 'b', label = 'add apis', bottom = delete_y_value + common_y_value)
+    plt.tick_params(labelsize=5)
+    plt.legend()
+    plt.title('malware %s vs all previous period diff' % family_name)
+    plt.savefig('api_count/malware_%s_vs_all_previous_period_diff.png' % family_name, dpi = 200)
+    plt.clf()
+
+
+def count_api_evolver_in_family():
+    seq_path_dict = get_seq_path_dict()
+    malware_dataset_path = 'dataset_family_filted.csv' # [md5, family, support_num, first_seen, vt_cnt]
+    family_app = {} # key = family_name, value = [[md5, first_year_month]
+    with open(malware_dataset_path, 'r') as f:
+        reader = csv.reader(f)
+        for row in reader:
+            md5 = row[0]
+            if md5 not in seq_path_dict:
+                continue
+            first_seen = row[3]
+            family_name = row[1]
+            if family_name not in family_app:
+                family_app[family_name] = []
+            first_year_month = int(first_seen.split('-')[0] + first_seen.split('-')[1])
+            family_app[family_name].append([md5, first_year_month])
+    period_month = 3 # 3 months
+    for family_name in ['airpush', 'smsreg', 'fakeinst', 'gappusin', 'youmi', 'dowgin', 'adwo', 'kuguo', 'secapk', 'droidkungfu']: # , 'smsreg', 'fakeinst', 'gappusin', 'youmi', 'dowgin', 'adwo', 'kuguo', 'secapk', 'droidkungfu'
+        family_app_periods = []
+        family_app[family_name].sort(key = lambda x:x[1])
+        period_start_year_month = family_app[family_name][0][1]
+        period_end_year_month = update_stop_time(period_start_year_month, period_month)
+        one_period = []
+        for row in family_app[family_name]:
+            first_year_month = row[1]
+            if first_year_month < period_end_year_month:
+                one_period.append(row)
+            else:
+                family_app_periods.append(['%d-%d' % (period_start_year_month, period_end_year_month), one_period])
+                one_period = []
+                period_start_year_month = period_end_year_month
+                period_end_year_month = update_stop_time(period_start_year_month, period_month)
+        if one_period:
+            family_app_periods.append(['%d-%d' % (period_start_year_month, period_end_year_month), one_period])
+        parse_family_app_periods(family_app_periods, seq_path_dict, family_name)
+        print(family_name),
+        for row in family_app_periods:
+            print('%s:%d ' % (row[0], len(row[1]))),
+        print('')
+
 if __name__ == "__main__":
-    count_apis()
+#     count_apis()
+#     count_apis_malware()
+    count_api_evolver_in_family()
 #     print(get_medium_year_month(201304, 201602))
+#     print(update_stop_time(201202, 10))

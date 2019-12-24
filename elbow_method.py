@@ -20,6 +20,7 @@ import matplotlib.pyplot as plt
 import pickle
 import csv
 import time
+import joblib
  
 # x1 = np.array([3, 1, 1, 2, 1, 6, 6, 6, 5, 6, 7, 8, 9, 8, 9, 9, 8, 8, 9, 9, 8, 9, 8, 7, 6, 5, 6, 6, 6, 1, 2, 1, 1, 3])
 # x2 = np.array([5, 4, 5, 6, 5, 8, 6, 7, 6, 7, 1, 2, 1, 2, 3, 2, 3, 5, 4, 5, 6, 5, 8, 6, 7, 6, 7, 1, 2, 1, 2, 3, 2, 3])
@@ -96,23 +97,19 @@ def elbow_method_TransE_embedding():
     print('finish')
 
 def elbow_method_evedroid_embedding():
-    pkl_path = 'entity_embedding_TransE.pkl'
+    pkl_path = 'evedroid_api2vec_new.pkl'
     with open(pkl_path, 'rb') as f:
-        entity_embedding = pickle.load(f)
-    print(type(entity_embedding))
-    print(entity_embedding.shape)
-    
-    embeddings_id_entity_mapping = {}
+        evedroid_embedding = joblib.load(f)
+    print(type(evedroid_embedding))
+    print(len(evedroid_embedding))
     embeddings = []
-    with open('entity_method.txt', 'r') as f:
-        reader = csv.reader(f) 
-        idx = 0
-        for row in reader:
-            entity = row[0]
-            entity_id = int(row[1])
-            embeddings.append(entity_embedding[entity_id, ])
-            embeddings_id_entity_mapping[idx] = entity
-            idx += 1
+    idx = 0
+    for api in evedroid_embedding:
+#         if idx < 5:
+#             print(api)
+#             print(evedroid_embedding[api])
+        embeddings.append(evedroid_embedding[api])
+        idx += 1
     embeddings = np.array(embeddings)
 #     y_pred = KMeans(n_clusters=1000, random_state=0).fit_predict(embeddings)
     distortions = []
@@ -124,7 +121,7 @@ def elbow_method_evedroid_embedding():
         inertia = kmeanModel.inertia_
         distortions.append(inertia)
         print('fit k=%d spend %fs inertia: %f' % (k, time.time() - start, inertia))
-    with open('distortions.txt', 'w') as f:
+    with open('evedroid_distortions.txt', 'w') as f:
         f.write('\n'.join([str(_) for _ in distortions]))
         f.write('\n')    
     plt.figure(figsize=(16,8))
@@ -132,8 +129,9 @@ def elbow_method_evedroid_embedding():
     plt.xlabel('k')
     plt.ylabel('Distortion')
     plt.title('The Elbow Method showing the optimal k')
-    plt.savefig('elbow_method_distortion.png')
+    plt.savefig('elbow_method_evedorid_distortion.png')
     print('finish')
 
 if __name__ == "__main__":
-    elbow_method_TransE_embedding()
+#     elbow_method_TransE_embedding()
+    elbow_method_evedroid_embedding()

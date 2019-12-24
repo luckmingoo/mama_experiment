@@ -12,9 +12,12 @@ import csv
 import os 
 import json 
 import argparse
+import matplotlib
+matplotlib.use('AGG')
+import matplotlib.pyplot as plot
 
 # R1 vt_count >= X1
-# R2 family_support_top1 >= X2%*X1
+# R2 family_support_top1 >= X2%*vt_cnt
 # R3 (family_support_top1 – top2)/sum(family_support_top_all) >= X3%
 
 parser = argparse.ArgumentParser()
@@ -81,6 +84,35 @@ def filt_family(md5_family_dict):
         first_seen = md5_vt_cnt_dict[md5][1]
         md5_family_filted.append([md5, md5_family_dict[md5][0][0], md5_family_dict[md5][0][1], first_seen, vt_cnt])
     return md5_family_filted
+
+def parse_top_family(families_num_list, families_num):
+    top_families = []
+    for row in families_num_list:
+        family = row[0]
+        family_app_num = row[1]
+        if family_app_num >= 500:
+            top_families.append(family)
+    idx = 0
+    for family in top_families:
+        idx += 1
+        family_year_month_app_num = {}
+        for row in families_num[family]:
+            fs_year_month = row[1]
+            if fs_year_month not in family_year_month_app_num:
+                family_year_month_app_num[fs_year_month] = 0
+            family_year_month_app_num[fs_year_month] += 1
+        x_y_list = []
+        for fs_year_month, num in family_year_month_app_num.items():
+            x_y_list.append([fs_year_month, num])
+        x_y_list.sort(key = lambda x: x[0])
+        x_list = [_[0] for _ in x_y_list]
+        y_list = [_[1] for _ in x_y_list]
+        
+        plot.cla()
+        plot.figure(figsize = (10,8))
+        plot.bar(x_list, y_list)
+        plot.title('Top %02d %s' % (idx, family))
+        plot.savefig('family/Top_%02d_%s.png' % (idx, family))
     
 def get_accurate_family():
     md5_family_dict = get_md5_family_dict()
@@ -88,21 +120,27 @@ def get_accurate_family():
     print(len(md5_family_filted))
     families_num = {}
     for row in md5_family_filted:
+        md5 = row[0]
         family = row[1]
+        first_seen = row[3]
         if family not in families_num:
-            families_num[family] = 0
-        families_num[family] += 1
+            families_num[family] = []
+        fs_year = int(first_seen.split('-')[0])
+        fs_month = int(first_seen.split('-')[1])
+        families_num[family].append([md5, "%d-%02d" % (fs_year, fs_month)])
     families_num_list = []
     for family in families_num:
-        families_num_list.append([family, families_num[family]])
+        families_num[family].sort(key = lambda x: x[1])
+        families_num_list.append([family, len(families_num[family]), families_num[family][0][1], families_num[family][-1][1]])
     families_num_list.sort(key = lambda x:x[1], reverse = True)
+    parse_top_family(families_num_list, families_num)
     with open('dataset_family_filted.csv', 'wb') as f:
         writer = csv.writer(f) 
         writer.writerows(md5_family_filted)
     with open('families.csv', 'wb') as f:
         writer = csv.writer(f) 
         writer.writerows(families_num_list)
-    print('finish')  
+    print('finish')
 
 if __name__ == "__main__":
     get_accurate_family()
