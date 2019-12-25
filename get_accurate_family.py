@@ -23,7 +23,7 @@ import matplotlib.pyplot as plot
 parser = argparse.ArgumentParser()
 parser.add_argument("-c", "--min_vt_cnt", type = int, default = 15)
 parser.add_argument("-sr", "--min_support_rate", type = float, default = 0.3)
-parser.add_argument("-sdr", "--min_support_diff_rate", type = float, default = 0.1)
+parser.add_argument("-sdr", "--min_support_diff_rate", type = float, default = 0.2)
 args = parser.parse_args()
 
 def get_md5_family_dict():
@@ -74,7 +74,7 @@ def filt_family(md5_family_dict):
             continue
         if len(md5_family_dict[md5]) < 2:
             continue
-        if (md5_family_dict[md5][0][1] - md5_family_dict[md5][1][1]) < min_support_diff_rate * sum_label_num: # R3
+        if (md5_family_dict[md5][0][1] - md5_family_dict[md5][1][1]) < min_support_diff_rate * vt_cnt: # R3
             need_remove_md5.append(md5)
             continue
     for md5 in need_remove_md5:
