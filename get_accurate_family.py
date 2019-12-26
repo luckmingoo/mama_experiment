@@ -105,14 +105,15 @@ def parse_top_family(families_num_list, families_num):
         for fs_year_month, num in family_year_month_app_num.items():
             x_y_list.append([fs_year_month, num])
         x_y_list.sort(key = lambda x: x[0])
-        x_list = [_[0] for _ in x_y_list]
+        x_list = [_[0][2:] for _ in x_y_list]
         y_list = [_[1] for _ in x_y_list]
         
         plot.cla()
         plot.figure(figsize = (10,8))
+        plot.tick_params(labelsize=5)
         plot.bar(x_list, y_list)
         plot.title('Top %02d %s' % (idx, family))
-        plot.savefig('family/Top_%02d_%s.png' % (idx, family))
+        plot.savefig('family/Top_%02d_%s.png' % (idx, family), dpi = 300)
     
 def get_accurate_family():
     md5_family_dict = get_md5_family_dict()
