@@ -939,6 +939,79 @@ def plot_two_period():
     print('finish')
 
 
+def get_all_families_periods(min_x_month_after, min_rate, feature_path_dict):
+    malware_dataset_path = 'dataset_euphony_family_filted.csv' # [md5, family, support_num, first_seen, vt_cnt]
+    family_app = {} # key = family_name, value = [[md5, first_year_month]
+    with open(malware_dataset_path, 'r') as f:
+        reader = csv.reader(f)
+        for row in reader:
+            md5 = row[0]
+            if md5 not in feature_path_dict:
+                continue
+            first_seen = row[3]
+            family_name = row[1]
+            if family_name not in family_app:
+                family_app[family_name] = []
+            first_year_month = int(first_seen.split('-')[0] + first_seen.split('-')[1])
+            family_app[family_name].append([md5, first_year_month])
+    all_families_periods = {}
+    for family_name in family_app: # 'airpush', 'smsreg', 'fakeinst', 'gappusin', 'youmi', 'dowgin', 'adwo', 'kuguo', 'secapk', 'droidkungfu'
+        if len(family_app[family_name]) < 500:
+            continue
+        family_app_periods = []
+        family_app[family_name].sort(key = lambda x:x[1])
+        period_start_year_month = family_app[family_name][0][1]
+        period_end_year_month = update_stop_time(period_start_year_month, min_x_month_after)
+        period_row = []
+        min_app_num = int(len(family_app[family_name]) * min_rate)
+        for row in family_app[family_name]:
+            first_year_month = row[1]
+            if first_year_month < period_end_year_month:
+                period_row.append(row)
+            else:
+                if len(period_row) < min_app_num:
+                    period_row.append(row)
+                    period_end_year_month = update_stop_time(period_end_year_month, min_x_month_after)
+                else:
+                    family_app_periods.append(['%d-%d' % (period_start_year_month, period_end_year_month), period_row])
+                    period_row = []
+                    period_start_year_month = period_end_year_month
+                    period_end_year_month = update_stop_time(period_end_year_month, min_x_month_after)
+        if len(period_row) >= (min_app_num/2):
+            family_app_periods.append(['%d-%d' % (period_start_year_month, period_end_year_month), period_row])
+        all_families_periods[family_name] = family_app_periods
+        print(family_name),
+        for row in family_app_periods:
+            print('%s:%d ' % (row[0], len(row[1]))),
+        print('')
+    return all_families_periods
+
+
+def get_periods_interested_method(family_app_period, interested_method, feature_path_dict):
+    root_dir = '/mnt/AndroZoo/DroidEvolver_feature'
+    period_api_dict = {}
+    app_cnt = 0
+    for row in family_app_period:
+        md5 = row[0]
+        feature_path = feature_path_dict[md5]
+        feature_abspath = os.path.join(root_dir, feature_path)
+        if os.path.exists(feature_abspath):
+            app_cnt += 1
+            with open(feature_abspath, 'rb') as f:
+                apis = pkl.load(f)
+                for api in apis:
+                    api = api.replace(':', '.')
+                    if api not in interested_method:
+                        continue
+                    if api not in period_api_dict:
+                        period_api_dict[api] = 0
+                    period_api_dict[api] += 1
+        else:
+            print('not exist: %s' % (feature_abspath)) 
+    for method in period_api_dict:
+        period_api_dict[method] = period_api_dict[method]/float(app_cnt) # average
+    return period_api_dict
+
 def analyze_top_families_diff_data():
     diff_rate_bound = [0.1, 0.3, 0.5, 1, 5]
     diff_rate_families = [[] for _ in range(len(diff_rate_bound) + 1)]
@@ -1281,6 +1354,47 @@ def count_api_evolver_with_periods_in_family(min_x_month_after, min_rate):
         print('')
         parse_family_app_periods_droidevolver(family_app_periods, feature_path_dict, family_name)
 
+def count_evolver_for_four_sensitve_api(): # getDeviceId, getImeiId
+    interested_method = ['android.telephony.TelephonyManager.getDeviceId', 'android.telephony.TelephonyManager.getSubscriberId',
+                         'android.telephony.TelephonyManager.getImei', 'android.telephony.TelephonyManager.getMeid']
+    feature_path_dict = get_droidevolver_feature_path_dict()
+    all_families_periods = get_all_families_periods(3, 0.1, feature_path_dict)
+    for family_name in all_families_periods: #['admogo']:# # all_families_periods[family_name] = [['%d-%d' % (period_start_year_month, period_end_year_month), period_row], ]
+        families_periods = all_families_periods[family_name]
+        periods_api_frequency_list = []
+        x_label = []
+        y_values = []
+        period_id = 0
+        for one_period in families_periods:
+            period_time = one_period[0]
+            x_label.append(period_time)
+            y_values.append([])
+            period_api_frequency_dict = get_periods_interested_method(one_period[1], interested_method, feature_path_dict)
+            periods_api_frequency_list.append([period_time, period_api_frequency_dict])
+            for method in interested_method:
+                method_frequency = period_api_frequency_dict.get(method, 0.0)
+                y_values[period_id].append(method_frequency)
+            period_id += 1
+        print(x_label)
+        print(y_values)
+        y0 = np.array([_[0] for _ in y_values])
+        y1 = np.array([_[1] for _ in y_values])
+        y2 = np.array([_[2] for _ in y_values])
+        y3 = np.array([_[3] for _ in y_values])
+        plt.cla()
+        plt.figure(figsize = (10, 8))
+        plt.bar(x_label, y0, color = '#87CEFA', label = interested_method[0])
+        plt.bar(x_label, y1, color = '#1E90FF', label = interested_method[1], bottom = y0)
+        plt.bar(x_label, y2, color = '#6495ED', label = interested_method[2], bottom = y0 + y1)
+        plt.bar(x_label, y3, color = '#4169E1', label = interested_method[3], bottom = y0 + y1 + y2)
+        plt.legend()
+        plt.tick_params(labelsize=4)
+        plt.title('%s interested method evolver' % family_name)
+        plt.savefig('interested_method/%s_interested_method_evolver.png' % family_name, dpi = 300)
+        print('counted %s' % family_name)
+
+
+
 if __name__ == "__main__":
 #     count_apis()
 #     count_apis_malware()
@@ -1293,8 +1407,9 @@ if __name__ == "__main__":
 #     plot_two_period_with_diff_frequency()
 #     plot_two_period()
 #     count_api_evolver_with_periods_in_family(3, 0.1)
-    analyze_top_families_diff_data()
+#     analyze_top_families_diff_data()
 
+    count_evolver_for_four_sensitve_api()
 
 #     generate_droidevolver_feature_idx()
 #     print(get_medium_year_month(201304, 201602))

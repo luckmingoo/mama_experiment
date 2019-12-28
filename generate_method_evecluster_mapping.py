@@ -12,12 +12,20 @@ import os
 import pickle 
 import csv
 
-def generate_method_evecluster_mapping():
+def generate_method_evecluster_mapping(cluster_k):
     current_method_min_len_dict = {}
     method_evecluster_mapping = {}
-    cluster_txt_dir = '/home/shellhand/mamadroid_RF_PAC_Bayesian/evedroid1221/cluster1000_1221'
-    for i in range(1000):
-        cluster_txt_path = os.path.join(cluster_txt_dir, 'cluster_%03d.txt' % i)
+    if cluster_k == 1000:
+        cluster_txt_dir = '/home/shellhand/mamadroid_RF_PAC_Bayesian/evedroid1221/cluster1000_1221'
+    elif cluster_k == 800:
+        cluster_txt_dir = '/home/shellhand/mamadroid_RF_PAC_Bayesian/evedroid1221/cluster800_1227'
+    elif cluster_k == 1200:
+        cluster_txt_dir = '/home/shellhand/mamadroid_RF_PAC_Bayesian/evedroid1221/cluster1200_1227'
+    else:
+        print('error cluster_k %d' % cluster_k)
+        exit(1)
+    for i in range(cluster_k):
+        cluster_txt_path = os.path.join(cluster_txt_dir, 'cluster_%04d.txt' % i)
         with open(cluster_txt_path, 'r') as f:
             reader = csv.reader(f)
             for row in reader:
@@ -31,8 +39,8 @@ def generate_method_evecluster_mapping():
                     current_method_min_len_dict[full_method_name] = 10000 # init the ret and para len a large number
                 if len(ret_para_name) < current_method_min_len_dict[full_method_name]:
                     method_evecluster_mapping[full_method_name] = i
-    print('method num: %d' % (len(method_evecluster_mapping)))
-    with open('method_evecluster_mapping_1000.pkl', 'wb') as f:
+    print('cluster_k %d method num: %d' % (cluster_k, len(method_evecluster_mapping)))
+    with open('method_evecluster_mapping_%d.pkl' % cluster_k, 'wb') as f:
         pickle.dump(method_evecluster_mapping, f) 
 
 def diff_two_cluster_method():
@@ -58,5 +66,5 @@ def diff_two_cluster_method():
     
     
 if __name__ == "__main__":
-#     generate_method_evecluster_mapping()
-    diff_two_cluster_method()
+    generate_method_evecluster_mapping(800)
+#     diff_two_cluster_method()

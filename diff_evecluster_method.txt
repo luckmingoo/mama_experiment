@@ -1,0 +1,252 @@
+android.view.animation.Animationialize
+java.security.KeyPairGeneratorSpiialize
+android.view.animation.AnimationSetialize
+android.app.LoaderManagerLoader
+com.google.android.gms.wallet.fragment.WalletFragmentialize
+java.security.interfaces.DSAKeyPairGeneratorialize
+android.support.v17.leanback.widget.RowPresenterializeRowViewHolder
+android.support.v17.leanback.widget.HorizontalGridViewAttributes
+java.lang.ThrowableCause
+android.text.method.BaseMovementMethodialize
+android.support.test.espresso.intent.ResettingStubberImplialize
+android.support.wearable.watchface.Gles2WatchFaceService.EngineializeEglDisplay
+com.google.android.gms.wallet.fragment.SupportWalletFragmentialize
+android.net.wifi.p2p.WifiP2pManagerialize
+android.text.method.ArrowKeyMovementMethodialize
+android.support.v17.leanback.widget.ShadowOverlayContainerialize
+javax.xml.transform.TransformerExceptionCause
+android.text.method.LinkMovementMethodialize
+java.net.Inet4Address.format">Textual representation of IP addresses</a> </h3>
+
+ Textual representation of IPv4 address used as input to methods
+ takes one of the following forms:
+
+ <blockquote><table cellpadding=0 cellspacing=0 summary="layout">
+ <tr><td><code>d.d.d.d</code></td></tr>
+ <tr><td><code>d.d.d</code></td></tr>
+ <tr><td><code>d.d</code></td></tr>
+ <tr><td><code>d</code></td></tr>
+ </table></blockquote>
+
+ <p> When four parts are specified, each is interpreted as a byte of
+ data and assigned, from left to right, to the four bytes of an IPv4
+ address.
+
+ <p> When a three part address is specified, the last part is
+ interpreted as a 16-bit quantity and placed in the right most two
+ bytes of the network address. This makes the three part address
+ format convenient for specifying Class B net- work addresses as
+ 128.net.host.
+
+ <p> When a two part address is supplied, the last part is
+ interpreted as a 24-bit quantity and placed in the right most three
+ bytes of the network address. This makes the two part address
+ format convenient for specifying Class A network addresses as
+ net.host.
+
+ <p> When only one part is given, the value is stored directly in
+ the network address without any byte rearrangement.
+
+ <p> For methods that return a textual representation as output
+ value, the first form, i.e. a dotted-quad string, is used.
+
+ <h4> The Scope of a Multicast Address </h4>
+
+ Historically the IPv4 TTL field in the IP header has doubled as a
+ multicast scope field: a TTL of 0 means node-local, 1 means
+ link-local, up through 32 means site-local, up through 64 means
+ region-local, up through 128 means continent-local, and up through
+ 255 are global. However, the administrative scoping is preferred.
+ Please refer to <a href="http://www.ietf.org/rfc/rfc2365.txt">
+ <i>RFC&nbsp;2365: Administratively Scoped IP Multicast</i></a></p>
+
+
+
+
+
+
+
+
+
+<h2 class="api-section">Summary</h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- ========== METHOD SUMMARY =========== -->
+<table id="pubmethods" class="responsive methods">
+<tr><th colspan="2"><h3>Public methods</h3></th></tr>
+
+
+
+  
+  <tr class="api apilevel-1"
+      data-version-added="1" >
+  
+  
+    <td><code>
+        
+        
+        
+        
+        
+        boolean</code>
+    </td>
+  
+    <td width="100%">
+      <code>
+      <a href="../../../reference/java/net/Inet4Address.html#equals
+android.view.animation.RotateAnimationialize
+com.google.android.gms.plus.PlusOneButtonialize
+android.renderscript.Program.BaseProgramBuilderProgram
+java.lang.ThreadLocalialValue
+android.support.v17.leanback.widget.VerticalGridPresenterializeGridViewHolder
+android.view.animation.TranslateAnimationialize
+android.view.accessibility.AccessibilityEventFromParcel
+android.text.method.MovementMethodialize
+java.security.SignatureSign
+java.security.SignatureVerify
+android.support.test.uiautomator.UiAutomatorInstrumentationTestRunnerializeUiAutomatorTest
+android.hardware.usb.UsbRequestialize
+android.support.v17.leanback.widget.ListRowPresenterializeRowViewHolder
+com.google.android.gms.plus.PlusOneButtonWithPopupialize
+android.icu.text.DateFormatSymbolsializeData
+android.view.animation.ScaleAnimationialize
+java.net.Inet6Address.format">Textual representation of IP addresses</a> </h3>
+
+ Textual representation of IPv6 address used as input to methods
+ takes one of the following forms:
+
+ <ol>
+   <li><p> <A NAME="lform">The preferred form</a> is x:x:x:x:x:x:x:x,
+   where the 'x's are
+   the hexadecimal values of the eight 16-bit pieces of the
+   address. This is the full form.  For example,
+
+   <blockquote><table cellpadding=0 cellspacing=0 summary="layout">
+   <tr><td><code>1080:0:0:0:8:800:200C:417A</code><td></tr>
+   </table></blockquote>
+
+   <p> Note that it is not necessary to write the leading zeros in
+   an individual field. However, there must be at least one numeral
+   in every field, except as described below.</li>
+
+   <li><p> Due to some methods of allocating certain styles of IPv6
+   addresses, it will be common for addresses to contain long
+   strings of zero bits. In order to make writing addresses
+   containing zero bits easier, a special syntax is available to
+   compress the zeros. The use of "::" indicates multiple groups
+   of 16-bits of zeros. The "::" can only appear once in an address.
+   The "::" can also be used to compress the leading and/or trailing
+   zeros in an address. For example,
+
+   <blockquote><table cellpadding=0 cellspacing=0 summary="layout">
+   <tr><td><code>1080::8:800:200C:417A</code><td></tr>
+   </table></blockquote>
+
+   <li><p> An alternative form that is sometimes more convenient
+   when dealing with a mixed environment of IPv4 and IPv6 nodes is
+   x:x:x:x:x:x:d.d.d.d, where the 'x's are the hexadecimal values
+   of the six high-order 16-bit pieces of the address, and the 'd's
+   are the decimal values of the four low-order 8-bit pieces of the
+   standard IPv4 representation address, for example,
+
+   <blockquote><table cellpadding=0 cellspacing=0 summary="layout">
+   <tr><td><code>::FFFF:129.144.52.38</code><td></tr>
+   <tr><td><code>::129.144.52.38</code><td></tr>
+   </table></blockquote>
+
+   <p> where "::FFFF:d.d.d.d" and "::d.d.d.d" are, respectively, the
+   general forms of an IPv4-mapped IPv6 address and an
+   IPv4-compatible IPv6 address. Note that the IPv4 portion must be
+   in the "d.d.d.d" form. The following forms are invalid:
+
+   <blockquote><table cellpadding=0 cellspacing=0 summary="layout">
+   <tr><td><code>::FFFF:d.d.d</code><td></tr>
+   <tr><td><code>::FFFF:d.d</code><td></tr>
+   <tr><td><code>::d.d.d</code><td></tr>
+   <tr><td><code>::d.d</code><td></tr>
+   </table></blockquote>
+
+   <p> The following form:
+
+   <blockquote><table cellpadding=0 cellspacing=0 summary="layout">
+   <tr><td><code>::FFFF:d</code><td></tr>
+   </table></blockquote>
+
+   <p> is valid, however it is an unconventional representation of
+   the IPv4-compatible IPv6 address,
+
+   <blockquote><table cellpadding=0 cellspacing=0 summary="layout">
+   <tr><td><code>::255.255.0.d</code><td></tr>
+   </table></blockquote>
+
+   <p> while "::d" corresponds to the general IPv6 address
+   "0:0:0:0:0:0:0:d".</li>
+ </ol>
+
+ <p> For methods that return a textual representation as output
+ value, the full form is used. Inet6Address will return the full
+ form because it is unambiguous when used in combination with other
+ textual data.
+
+ <h4> Special IPv6 address </h4>
+
+ <blockquote>
+ <table cellspacing=2 summary="Description of IPv4-mapped address">
+ <tr><th valign=top><i>IPv4-mapped address</i></th>
+         <td>Of the form::ffff:w.x.y.z, this IPv6 address is used to
+         represent an IPv4 address. It allows the native program to
+         use the same address data structure and also the same
+         socket when communicating with both IPv4 and IPv6 nodes.
+
+         <p>In InetAddress and Inet6Address, it is used for internal
+         representation; it has no functional role. Java will never
+         return an IPv4-mapped address.  These classes can take an
+         IPv4-mapped address as input, both in byte array and text
+         representation. However, it will be converted into an IPv4
+         address.</td></tr>
+ </table></blockquote>
+
+ <h4><A NAME="scoped">Textual representation of IPv6 scoped addresses</a></h4>
+
+ <p> The textual representation of IPv6 addresses as described above can be
+ extended to specify IPv6 scoped addresses. This extension to the basic
+ addressing architecture is described in [draft-ietf-ipngwg-scoping-arch-04.txt].
+
+ <p> Because link-local and site-local addresses are non-global, it is possible
+ that different hosts may have the same destination address and may be
+ reachable through different interfaces on the same originating system. In
+ this case, the originating system is said to be connected to multiple zones
+ of the same scope. In order to disambiguate which is the intended destination
+ zone, it is possible to append a zone identifier 
+android.support.v4.app.LoaderManagerLoader
+org.apache.http.util.ExceptionUtilsCause
+com.google.android.gms.maps.MapsInitializerialize
+android.support.v17.leanback.widget.VerticalGridViewAttributes
+android.support.test.espresso.intent.ResettingStubberialize
+java.security.KeyPairGeneratorialize
+org.apache.http.message.BasicLineFormatterBuffer

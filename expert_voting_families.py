@@ -11,7 +11,10 @@ import plotly.graph_objects as go
 import csv 
 import os
 import time
-
+import json
+import matplotlib
+matplotlib.use('AGG')
+import matplotlib.pyplot as plt
 
 # # Utils: Tree plotter
 
@@ -647,8 +650,85 @@ def main():
 #         print("benign depth: %d time: %f split_seq num: %d" % (d, time.time() - start, len(split_seq)))
 
 
+def diff_two_seq_dict(previous_period, next_period):
+    previous_period_set = set(previous_period.keys())
+    next_period_set = set(next_period.keys())
+    delete_seq = previous_period_set - next_period_set
+    common_seq = previous_period_set & next_period_set
+    add_seq = next_period_set - previous_period_set
+    return delete_seq, common_seq, add_seq
 
+def analyze_expert_voting_result():
+    seq_path_dict = get_seq_path_dict()
+    all_families_periods = get_all_families_periods(3, 0.1, seq_path_dict)
+    top_n = 10
+    families_diff = []
+    families_x_label = []
+    for family_name in all_families_periods: # all_families_periods[family_name] = [['%d-%d' % (period_start_year_month, period_end_year_month), period_row], ]
+        families_periods = all_families_periods[family_name]
+        x_label = []
+        y_values = []
+        periods_diff = []
+        idx = 0
+        for one_period in families_periods:
+            period_time = one_period[0]
+            x_label.append(period_time)
+            d = 5
+            top_n_method_dict = {}
+            with open('expert_voting_seqs/%s_%s_depth%02d.csv' % (family_name,period_time, d ), 'r') as f:
+                reader = csv.reader(f)
+                cnt_id = 0
+                for row in reader:
+                    cnt_id += 1
+                    seq_list_str = row[0]
+                    frequency = float(row[1])
+                    if cnt_id > top_n:
+                        break
+                    seq_list_str = seq_list_str.replace('\'', '\"')
+                    seq_list = json.loads(seq_list_str)
+                    seq_tuple = tuple(seq_list)
+                    top_n_method_dict[seq_tuple] = frequency
+            periods_diff.append(top_n_method_dict)
+            if idx == 0:
+                y_values.append([0, len(top_n_method_dict), 0]) # delete_action common_action add_action
+            else:
+                delete_seq, common_seq, add_seq = diff_two_seq_dict(periods_diff[idx -1], periods_diff[idx])
+                y_values.append([len(delete_seq), len(common_seq), len(add_seq)])
+                if idx == 1:
+                    families_x_label.append(family_name)
+                    families_diff.append([len(delete_seq), len(common_seq), len(add_seq)])
+            idx += 1
+        print(x_label)
+        print(y_values)
+        delete_num = np.array([_[0] for _ in y_values])
+        common_num = np.array([_[1] for _ in y_values])
+        add_num = np.array([_[2] for _ in y_values])
+        plt.cla()
+        plt.figure(figsize = (10, 8))
+        plt.bar(x_label, - delete_num, color = '#00BFFF', label = 'delete top %d seq' % top_n)
+        plt.bar(x_label, common_num, color = '#B0C4DE', label = 'common top %d seq' % top_n)
+        plt.bar(x_label, add_num, color = '#4169E1', label = 'add top %d seq' % top_n, bottom = common_num)
+        plt.legend()
+        plt.title('%s top %d seq diff' % (family_name, top_n))
+        plt.tick_params(labelsize = 5)
+        plt.savefig('expert_voting_seqs/%s_top_%d_seq_diff.png' % (family_name, top_n), dpi = 300)
+        plt.cla()
+    
+    families_delete_label = np.array([_[0] for _ in families_diff])
+    families_common_label = np.array([_[1] for _ in families_diff])
+    families_add_label = np.array([_[2] for _ in families_diff])
+    plt.cla()   
+    plt.figure(figsize = (10, 8))
+    plt.bar(families_x_label, - families_delete_label, color = '#00BFFF', label = 'family delete seqs')
+    plt.bar(families_x_label, families_common_label, color = '#B0C4DE', label = 'family common seqs')
+    plt.bar(families_x_label, families_add_label, color = '#4169E1', label = 'family add seqs', bottom = families_common_label)
+    plt.tick_params(labelsize=5)
+    plt.legend()
+    plt.title('malware families period top %d seq diff' % top_n)
+    plt.savefig('expert_voting_seqs/malware_families_period_top_%d_seq_diff.png' % (top_n), dpi = 300)
+         
 if __name__ == "__main__":
-    main()
+#     main()
+    analyze_expert_voting_result()
 
 
