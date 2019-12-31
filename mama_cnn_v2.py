@@ -178,7 +178,7 @@ def evaluation(method, dataset, user, device_source):
             f.write('test_id %d TP FP TN FN F1: %d %d %d %d %.4f\n' % (test_id, TP, FP, TN, FN, F1))
 
 def optimize_para(method, dataset, user, device_source):
-    log_name = 'log/optimize_cnn_%s_%s_evaluation.txt' % (dataset, method)
+    log_name = 'log/optimize_cnn_%s_%s_evaluation_v1.txt' % (dataset, method)
     if os.path.exists(log_name):
         os.remove(log_name)
     if user == 'mlsnrs':
@@ -192,38 +192,39 @@ def optimize_para(method, dataset, user, device_source):
     print('x_train shape: %s y_train shape: %s' % (str(x_train.shape), str(y_train.shape)))
     start = time.time()
     print('start train')
-    for k in [3, 5]:
-        clf = CNN(layer_num = 3, kernel_size = k, gpu_id = 1)
-        step_size = 10
-        for e in range(10, 300, step_size):
-            clf.fit(x_train, y_train, epoch = step_size, batch_size = 500, lr = 0.01)
-            end = time.time()
-            print('Training kernel_size=%d  epoch=%d time used: %f s' % (k, e, end - start))
-        #     torch.cuda.empty_cache()
-            y_pred = clf.predict(x_train, batch_size = 20)
-            cm = confusion_matrix(y_train, np.int32(y_pred >= 0.5))
-            TP = cm[1][1]
-            FP = cm[0][1]
-            TN = cm[0][0]
-            FN = cm[1][0]
-            F1 = float(2*TP)/(2*TP + FN + FP)
-            print('train data kernel_size=%d  epoch=%d TP FP TN FN F1: %d %d %d %d %.4f' % (k, e, TP, FP, TN, FN, F1))
-            with open(log_name, 'a') as f:
-                f.write('train data kernel_size=%d  epoch=%d TP FP TN FN F1: %d %d %d %d %.4f\n' % (k, e, TP, FP, TN, FN, F1))
-            for test_id in range(0, 1):#13):
-                x_test, y_test = get_test_data(dataset, test_id, method, save_feature_dict, root_dir_prefix, device_source)
-#                 print('x_test shape: %s y_test shape: %s' % (str(x_test.shape), str(y_test.shape)))
-                y_pred = clf.predict(x_test, batch_size = 20)
-        #         y_pred = classify(y_pred)
-                cm = confusion_matrix(y_test, np.int32(y_pred >= 0.5))
+    for b in range(50, 501, 50):
+        for k in [3, 5]:
+            clf = CNN(layer_num = 3, kernel_size = k, gpu_id = 2)
+            step_size = 10
+            for e in range(10, 300, step_size):
+                clf.fit(x_train, y_train, epoch = step_size, batch_size = b, lr = 0.01)
+                end = time.time()
+                print('Training batch_size=%d kernel_size=%d  epoch=%d time used: %f s' % (b, k, e, end - start))
+            #     torch.cuda.empty_cache()
+                y_pred = clf.predict(x_train, batch_size = 20)
+                cm = confusion_matrix(y_train, np.int32(y_pred >= 0.5))
                 TP = cm[1][1]
                 FP = cm[0][1]
                 TN = cm[0][0]
                 FN = cm[1][0]
                 F1 = float(2*TP)/(2*TP + FN + FP)
-                print('test_id %d kernel_size=%d  epoch=%d TP FP TN FN F1: %d %d %d %d %.4f' % (test_id, k, e, TP, FP, TN, FN, F1))
+                print('train data batch_size=%d kernel_size=%d  epoch=%d TP FP TN FN F1: %d %d %d %d %.4f' % (b, k, e, TP, FP, TN, FN, F1))
                 with open(log_name, 'a') as f:
-                    f.write('test_id %d kernel_size=%d  epoch=%d TP FP TN FN F1: %d %d %d %d %.4f\n' % (test_id, k, e, TP, FP, TN, FN, F1))
+                    f.write('train data batch_size=%d kernel_size=%d  epoch=%d TP FP TN FN F1: %d %d %d %d %.4f\n' % (b, k, e, TP, FP, TN, FN, F1))
+                for test_id in range(0, 1):#13):
+                    x_test, y_test = get_test_data(dataset, test_id, method, save_feature_dict, root_dir_prefix, device_source)
+    #                 print('x_test shape: %s y_test shape: %s' % (str(x_test.shape), str(y_test.shape)))
+                    y_pred = clf.predict(x_test, batch_size = 20)
+            #         y_pred = classify(y_pred)
+                    cm = confusion_matrix(y_test, np.int32(y_pred >= 0.5))
+                    TP = cm[1][1]
+                    FP = cm[0][1]
+                    TN = cm[0][0]
+                    FN = cm[1][0]
+                    F1 = float(2*TP)/(2*TP + FN + FP)
+                    print('test_id %d batch_size=%d kernel_size=%d  epoch=%d TP FP TN FN F1: %d %d %d %d %.4f' % (test_id, b, k, e, TP, FP, TN, FN, F1))
+                    with open(log_name, 'a') as f:
+                        f.write('test_id %d batch_size=%d kernel_size=%d  epoch=%d TP FP TN FN F1: %d %d %d %d %.4f\n' % (test_id, b, k, e, TP, FP, TN, FN, F1))
 
 if __name__ == "__main__":
     method = args.method
