@@ -151,9 +151,14 @@ class CNN():
             batch_pred_tensor = self.model.forward(batch_x_tensor)
             batch_pred = batch_pred_tensor.data.cpu().detach().numpy()
             
-            m = len(batch_pred)
-            for j in range(m):
-                preds.append(batch_pred[j])
+            try:
+                m = len(batch_pred)
+                for j in range(m):
+                    preds.append(batch_pred[j])
+            except Exception as e:
+                print(e)
+                print(batch_pred)
+                print(batch_pred.shape)
 
         return np.array(preds)
     

@@ -143,12 +143,16 @@ def evaluation(method, dataset, user, device_source):
         print('x_train shape: %s y_train shape: %s' % (str(x_train.shape), str(y_train.shape)))
         start = time.time()
         print('start train')
-        clf = CNN(layer_num = 3, kernel_size = 3, gpu_id = 2)
-        clf.fit(x_train, y_train, epoch = 5, batch_size = 500, lr = 0.01)
+        clf = CNN(layer_num = 3, kernel_size = 5, gpu_id = 3)
+        clf.fit(x_train, y_train, epoch = 5, batch_size = 350, lr = 0.01) # 260
         end = time.time()
         print('Training  model time used: %f s' % (end - start))
         print(x_train.shape)
-        y_pred = clf.predict(x_train, batch_size = 20)
+        len_x = x_train.shape[0]
+        if len_x % 20 != 1:
+            y_pred = clf.predict(x_train, batch_size = 20)
+        else:
+            y_pred = clf.predict(x_train, batch_size = 21)
         print(y_pred.shape)
         cm = confusion_matrix(y_train, np.int32(y_pred >= 0.5))
         TP = cm[1][1]
@@ -231,6 +235,6 @@ if __name__ == "__main__":
     dataset = args.dataset
     user = args.user
     device_source = args.device_source
-#     evaluation(method, dataset, user, device_source)
-    optimize_para(method, dataset, user, device_source)
+    evaluation(method, dataset, user, device_source)
+#     optimize_para(method, dataset, user, device_source)
     print('finish')
