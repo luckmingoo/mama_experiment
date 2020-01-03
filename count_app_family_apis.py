@@ -40,6 +40,30 @@ def generate_droidevolver_feature_idx():
         writer.writerows(malware_dataset_droidevolver_feature)
     print('finish')
 
+def generate_droidevolver_feature_idx_for_benign():
+    benign_dataset_csv = '/mnt/AndroZoo/GooglePlay_firstseen/apks_benign_hash_path_100w.csv'
+    root_dir = '/mnt/AndroZoo/DroidEvolver_feature'
+    benign_dataset = []
+    with open(benign_dataset_csv, 'r') as f:
+        reader = csv.reader(f) 
+        for row in reader:
+            benign_dataset.append(row)
+    benign_dataset_droidevolver_feature = []
+    idx = 0
+    for row in benign_dataset:
+        idx += 1
+        md5 = row[0]
+        first_seen = row[1]
+        fs_year = int(first_seen.split('-')[0])
+        feature_path = 'benign_feature/{}/{}.feature'.format(fs_year, md5)
+        if os.path.exists(os.path.join(root_dir, feature_path)):
+            benign_dataset_droidevolver_feature.append([md5, first_seen, feature_path])
+        if idx % 1000 == 0:
+            print('%d: %s' % (idx, md5))
+    with open(os.path.join(root_dir, 'benign_dataset_droidevolver_feature_path.csv'), 'wb') as f:
+        writer = csv.writer(f) 
+        writer.writerows(benign_dataset_droidevolver_feature)
+    print('finish')
 
 def get_droidevolver_feature_path_dict():
     droidevolver_feature_path_dict = {}
@@ -1787,9 +1811,11 @@ if __name__ == "__main__":
 #     count_api_unstability_v3_sensitive_method(3, 0.1)
 #     plot_two_period_sensitive_method()
 #     count_api_unstability_v4_sensitive_method(3, 0.1, 0.2)
-    plot_two_period_with_diff_frequency_sensitive_method()
+#     plot_two_period_with_diff_frequency_sensitive_method()
 #     count_evolver_for_four_sensitve_api()
 
+
+    generate_droidevolver_feature_idx_for_benign()
 #     generate_droidevolver_feature_idx()
 #     print(get_medium_year_month(201304, 201602))
 #     print(update_stop_time(201202, 10))

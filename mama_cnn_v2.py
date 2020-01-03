@@ -144,12 +144,12 @@ def evaluation(method, dataset, user, device_source):
         start = time.time()
         print('start train')
         clf = CNN(layer_num = 3, kernel_size = 5, gpu_id = 3)
-        clf.fit(x_train, y_train, epoch = 5, batch_size = 350, lr = 0.01) # 260
+        clf.fit(x_train, y_train, epoch = 260, batch_size = 350, lr = 0.01) # 260
         end = time.time()
         print('Training  model time used: %f s' % (end - start))
         print(x_train.shape)
         len_x = x_train.shape[0]
-        if len_x % 20 != 1:
+        if (len_x % 20) != 1:
             y_pred = clf.predict(x_train, batch_size = 20)
         else:
             y_pred = clf.predict(x_train, batch_size = 21)
@@ -169,7 +169,12 @@ def evaluation(method, dataset, user, device_source):
             for test_month in range(0, 12):
                 x_test, y_test = get_test_data(dataset, test_year, test_month, method, save_feature_dict, root_dir_prefix)
                 print('%d-%02d x_test shape: %s y_test shape: %s' % (test_year, test_month + 1, str(x_test.shape), str(y_test.shape)))
-                y_pred = clf.predict(x_test, batch_size = 20)
+                len_x = x_test.shape[0]
+                if (len_x % 20) != 1:
+                    y_pred = clf.predict(x_test, batch_size = 20)
+                else:
+                    y_pred = clf.predict(x_test, batch_size = 21)
+#                 y_pred = clf.predict(x_test, batch_size = 20)
                 cm = confusion_matrix(y_test, np.int32(y_pred >= 0.5))
                 TP = cm[1][1]
                 FP = cm[0][1]
