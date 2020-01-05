@@ -110,6 +110,8 @@ def main_average_f1_according_raw_data():
               'evecluster_simplified_v0', 'evecluster_simplified_v1', 'evecluster_simplified_v2']# ['450_package', 'cluster_v0'] # 'manual_package_v0', 'manual_package_v1', 
     alias_labels = ['450_package', 'cluster_simplified_k_1000','cluster_simplified_k_800', 'cluster_simplified_k_1200', 
               'evecluster_simplified_k_1000', 'evecluster_simplified_k_800', 'evecluster_simplified_k_1200']
+    labels = ['450_package', 'cluster_simplified_v0']
+    alias_labels = ['origin mamadroid', 'mamadroid with meta-knowledge',]
     x_list = ['train']
     for i in range(12):
         x_list.append('%02d' % (i+1))
@@ -152,8 +154,9 @@ def main_average_f1_according_raw_data():
         plt.plot(x_list[0:], average_y_list[i][0:], 'o-', label = alias_labels[i])
     plt.title("{}_average f1 raw data".format(dataset))
     for i, label in enumerate(labels):
-        plt.text(4.5, 0.71 + 0.03*i, '%s AUT: %.4f' % (label, AUTs[i]))
+        plt.text(2.5, 0.95 - 0.03*i, '%s AUT: %.4f' % (label, AUTs[i]))
     plt.legend()
+    plt.ylim((0, 1))
     plt.savefig('f1_figure/%s_average_f1_raw_data.png' % dataset, dpi = 150)    
 
 def main_average_f1_according_raw_data_just_pac_bayesian():
@@ -232,5 +235,5 @@ def main():
 if __name__ == "__main__":    
 #     main()
 #     main_average_f1()
-#     main_average_f1_according_raw_data()
-    main_average_f1_according_raw_data_just_pac_bayesian()
+    main_average_f1_according_raw_data()
+#     main_average_f1_according_raw_data_just_pac_bayesian()
