@@ -13,6 +13,7 @@ import os
 f1_list = []
 log_file = './log/optimize_cnn_dataset_20132014_light_weight_450_package_evaluation.txt'
 log_file = './log/optimize_cnn_dataset_20132014_light_weight_450_package_evaluation_v1.txt'
+log_file = './log/optimize_cnn_dataset_all_month_5k_450_package_evaluation_v2.txt'
 with open(log_file, 'r') as f:
     for line in f:
         line = line.strip()
