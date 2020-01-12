@@ -110,8 +110,8 @@ def main_average_f1_according_raw_data():
               'evecluster_simplified_v0', 'evecluster_simplified_v1', 'evecluster_simplified_v2']# ['450_package', 'cluster_v0'] # 'manual_package_v0', 'manual_package_v1', 
     alias_labels = ['450_package', 'cluster_simplified_k_1000','cluster_simplified_k_800', 'cluster_simplified_k_1200', 
               'evecluster_simplified_k_1000', 'evecluster_simplified_k_800', 'evecluster_simplified_k_1200']
-    labels = ['450_package', '450_package_simplify', 'cluster_simplified_v0', '450_cluster', 'cluster_simplified_v3']
-    alias_labels = ['origin mamadroid', '2*450 package', '2*1000 cluster', '450 cluster', '2*450 cluster']
+#     labels = ['450_package', '450_package_simplify', 'cluster_simplified_v0', '450_cluster', 'cluster_simplified_v3']
+#     alias_labels = ['origin mamadroid', '2*450 package', '2*1000 cluster', '450 cluster', '2*450 cluster']
     x_list = ['train']
     for i in range(12):
         x_list.append('%02d' % (i+1))
@@ -215,6 +215,63 @@ def main_average_f1_according_raw_data_just_pac_bayesian():
         plt.text(4.5, 0.71 + 0.03*i, '%s AUT: %.4f' % (label, AUTs[i]))
     plt.legend()
     plt.savefig('f1_figure/pac_bayesian_%s_average_f1_raw_data.png' % dataset, dpi = 150)   
+
+def plot_standard_figure():
+    dataset = 'dataset_all_month_5k'
+    labels = ['450_package', 'cluster_simplified_v0','cluster_simplified_v1', 'cluster_simplified_v2', 
+              'evecluster_simplified_v0', 'evecluster_simplified_v1', 'evecluster_simplified_v2']# ['450_package', 'cluster_v0'] # 'manual_package_v0', 'manual_package_v1', 
+    alias_labels = ['450_package', 'cluster_simplified_k_1000','cluster_simplified_k_800', 'cluster_simplified_k_1200', 
+              'evecluster_simplified_k_1000', 'evecluster_simplified_k_800', 'evecluster_simplified_k_1200']
+    labels = ['450_package', '450_package_simplify', 'cluster_simplified_v0', '450_cluster', 'cluster_simplified_v3']
+    alias_labels = ['origin mamadroid', '2*450 package', '2*1000 cluster', '450 cluster', '2*450 cluster']
+    labels = ['450_package', 'cluster_simplified_v0']
+    alias_labels = ['original', 'with meta-knowledge']
+    x_list = ['validation']
+    for i in range(12):
+        x_list.append('%02d' % (i+1))
+    average_y_list = []
+    for label in labels:
+        TP_list = [[] for _ in range(2012, 2018)]
+        FP_list = [[] for _ in range(2012, 2018)]
+        FN_list = [[] for _ in range(2012, 2018)]
+        for year in range(2012, 2018):
+            log_file = './log/{}_{}_{}train_evaluation.txt'.format(dataset, label, year)
+            with open(log_file, 'r') as f:
+                idx = 0
+                for line in f:
+                    line = line.strip()
+                    TP = int(line.split(' ')[-5])
+                    FP = int(line.split(' ')[-4])
+                    FN = int(line.split(' ')[-2])
+                    TP_list[year - 2012].append(TP)
+                    FP_list[year - 2012].append(FP)
+                    FN_list[year - 2012].append(FN)
+                    idx += 1
+                    if idx >= 13:
+                        break
+        average_y = []
+        for i in range(13):
+            sum_TP = 0
+            sum_FP = 0
+            sum_FN = 0
+            for year in range(2012, 2018):
+                sum_TP += TP_list[year - 2012][i]
+                sum_FP += FP_list[year - 2012][i]
+                sum_FN += FN_list[year - 2012][i]
+            f1 = float(2*sum_TP)/(2*sum_TP + sum_FN + sum_FP) 
+            average_y.append(f1)
+        average_y_list.append(average_y)
+    AUTs = cal_AUT(average_y_list, labels)
+    plt.figure(figsize = (10, 8))
+    plt.xlabel('month')
+    for i in range(len(average_y_list)):
+        plt.plot(x_list[0:], average_y_list[i][0:], 'o-', label = "%s: %f" % (alias_labels[i], AUTs[i]))
+    plt.title("MAMADROID")
+    plt.ylim((0,1))
+    plt.legend()
+    foo_fig = plt.gcf()
+    foo_fig.savefig('f1_figure/mamadroid_v1.eps', format='eps', dpi = 300) 
+    plt.savefig('f1_figure/mamadroid_v1.jpg', dpi = 300)  
     
 # float(2*TP)/(2*TP + FN + FP)
  
@@ -236,5 +293,6 @@ def main():
 if __name__ == "__main__":    
 #     main()
 #     main_average_f1()
-    main_average_f1_according_raw_data()
+#     main_average_f1_according_raw_data()
+    plot_standard_figure()
 #     main_average_f1_according_raw_data_just_pac_bayesian()

@@ -16,7 +16,7 @@ def save_dataset():
         dataset_year_benign = []
         dataset_year_malware = []
         for month in range(12):
-            file_name_txt = os.path.join(root_dir, 'dataset_all_month_5k/%d%02d_filename.txt' % (year, month))
+            file_name_txt = os.path.join(root_dir, 'dataset_all_month_5k/%d%02d_filename.txt' % (year, month + 1))
             with open(file_name_txt, 'r') as f:
                 reader = csv.reader(f) 
                 for row in reader:
