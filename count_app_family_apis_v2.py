@@ -1271,7 +1271,11 @@ def plot_two_period():
 #     plt.title('malware families period diff apis')
     plt.savefig('diff_api/proportional_division_malware_families_period_diff_apis.png', dpi = 300)
     
-        
+    foo_fig = plt.gcf()
+    foo_fig.savefig('diff_api/diff_apis_between_periods.eps', format='eps', dpi = 300) 
+    plt.savefig('diff_api/diff_apis_between_periods.jpg', dpi = 300)         
+
+
 #     for row in families_diff:
 #         family_name = row[0]
 #         previous_period_time = row[1]
@@ -1314,6 +1318,37 @@ def plot_two_period():
 #         plt.savefig('diff_api/malware_%s_period_diff_apis.png' % family_name, dpi = 300)
     print('finish')
 
+def plot_all_period_average_raw_data(families_average_diff): # family_name, per_period_app_num, delete_average_api_num, common_average_api_num, add_average_api_num
+    families_x_label = []
+    families_delete_label = []
+    families_common_label = []
+    families_add_label = []
+    for row in families_average_diff:
+        family_name = row[0]
+        delete_api = row[2]
+        common_api = row[3]
+        add_api = row[4]
+        families_x_label.append(family_name)
+        families_delete_label.append(delete_api)
+        families_common_label.append(common_api)
+        families_add_label.append(add_api)
+    families_delete_label = np.array(families_delete_label)
+    families_common_label = np.array(families_common_label)
+    families_add_label = np.array(families_add_label)
+    plt.cla()
+    plt.figure(figsize = (10, 8))
+    plt.bar(families_x_label, - families_delete_label, color = '#00BFFF', label = 'delete apis')
+    plt.bar(families_x_label, families_common_label, color = '#B0C4DE', label = 'common apis')
+    plt.bar(families_x_label, families_add_label, color = '#4169E1', label = 'add apis', bottom = families_common_label)
+    plt.tick_params(labelsize=8)
+    plt.xticks(rotation = 55)
+    plt.legend()
+#     plt.title('malware families period diff apis')
+#     plt.savefig('diff_api/proportional_division_malware_families_period_diff_apis.png', dpi = 300)
+    
+    foo_fig = plt.gcf()
+    foo_fig.savefig('diff_api/average_diff_apis_between_periods.eps', format='eps', dpi = 300) 
+    plt.savefig('diff_api/average_diff_apis_between_periods.jpg', dpi = 300)  
 
 def plot_two_period_sensitive_method():
     families_diff = []
@@ -2037,6 +2072,7 @@ def count_all_perios_api_changes_average():
 #             first_year_month = int(first_seen.split('-')[0] + first_seen.split('-')[1])
             family_app[family_name].append([md5, first_seen])
     all_periods_api_changes = []
+    families_average_diff = []
     family_id = 0
     for family_name in family_app: # 'airpush', 'smsreg', 'fakeinst', 'gappusin', 'youmi', 'dowgin', 'adwo', 'kuguo', 'secapk', 'droidkungfu'
         if len(family_app[family_name]) < 500:
@@ -2061,27 +2097,34 @@ def count_all_perios_api_changes_average():
             delete_previous_api_num_sum += delete_previous_api_num
             common_previous_api_num_sum += common_previous_api_num
             add_previous_api_num_sum += add_previous_api_num
-        change_ratio = (delete_previous_api_num + add_previous_api_num)/float(delete_previous_api_num + common_previous_api_num)
-        all_periods_api_changes[family_id].append(change_ratio)
-        family_id += 1
-    changes_ratio_bound = [0.1, 0.3, 0.5, 0.7]
-    diff_periods = [[0 for i in range(9)] for _ in range(len(changes_ratio_bound) + 1)]
-    for j in range(2, 11):
-        for i in range(len(all_periods_api_changes)):
-            diff_ratio = all_periods_api_changes[i][j]
-            bound_idx = 0
-            while bound_idx < len(changes_ratio_bound):
-                if diff_ratio >= changes_ratio_bound[bound_idx]:
-                    bound_idx += 1
-                else:
-                    break
-            diff_periods[bound_idx][j - 2] += 1
-    with open('diff_api/proportional_division_all_periods_api_changs.csv', 'wb') as f:
-        writer = csv.writer(f)
-        writer.writerows(all_periods_api_changes) 
-    with open('diff_api/proportional_division_diff_periods.csv', 'wb') as f:
-        writer = csv.writer(f) 
-        writer.writerows(diff_periods)
+        per_period_app_num = int(len(family_app[family_name])/10)
+        delete_average_api_num = delete_previous_api_num_sum/9
+        common_average_api_num = common_previous_api_num_sum/9
+        add_average_api_num = add_previous_api_num_sum/9
+        families_average_diff.append([family_name, per_period_app_num, delete_average_api_num, common_average_api_num, add_average_api_num])
+    plot_all_period_average_raw_data(families_average_diff)
+    
+#         change_ratio = (delete_previous_api_num + add_previous_api_num)/float(delete_previous_api_num + common_previous_api_num)
+#         all_periods_api_changes[family_id].append(change_ratio)
+#         family_id += 1
+#     changes_ratio_bound = [0.1, 0.3, 0.5, 0.7]
+#     diff_periods = [[0 for i in range(9)] for _ in range(len(changes_ratio_bound) + 1)]
+#     for j in range(2, 11):
+#         for i in range(len(all_periods_api_changes)):
+#             diff_ratio = all_periods_api_changes[i][j]
+#             bound_idx = 0
+#             while bound_idx < len(changes_ratio_bound):
+#                 if diff_ratio >= changes_ratio_bound[bound_idx]:
+#                     bound_idx += 1
+#                 else:
+#                     break
+#             diff_periods[bound_idx][j - 2] += 1
+#     with open('diff_api/proportional_division_all_periods_api_changs.csv', 'wb') as f:
+#         writer = csv.writer(f)
+#         writer.writerows(all_periods_api_changes) 
+#     with open('diff_api/proportional_division_diff_periods.csv', 'wb') as f:
+#         writer = csv.writer(f) 
+#         writer.writerows(diff_periods)
     print('finish')
 
 def plot_families_common_apis_diff_freq():
@@ -2138,6 +2181,9 @@ def plot_families_common_apis_diff_freq():
     plt.legend()
 #     plt.title('malware families period diff apis')
     plt.savefig('diff_api/proportional_division_malware_families_periods_common_apis.png', dpi = 300)
+    foo_fig = plt.gcf()
+    foo_fig.savefig('diff_api/malware_families_common_apis_evolver.eps', format='eps', dpi = 300) 
+    plt.savefig('diff_api/malware_families_common_apis_evolver.jpg', dpi = 300)  
     print('finish')
     
 
@@ -2152,8 +2198,10 @@ if __name__ == "__main__":
 #     count_api_unstability_v4(3, 0.1, 0.2)
 #     plot_two_period_with_diff_frequency()
 #     plot_two_period()
+    count_all_perios_api_changes_average()
+
 #     count_api_unstability_v5()
-    plot_families_common_apis_diff_freq()
+#     plot_families_common_apis_diff_freq()
 #     count_api_evolver_with_periods_in_family(3, 0.1)
 #     count_all_perios_api_changes()
 #     analyze_top_families_diff_data()
