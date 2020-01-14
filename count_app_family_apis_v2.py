@@ -457,6 +457,72 @@ def get_x_y_delete_common_add_labels(diff_period):
     add_y_value = np.array([_[2] for _ in y_values])
     return x_labels, delete_y_value, common_y_value, add_y_value
 
+def parse_family_app_periods_droidevolver_sensitive_method(family_app_periods, feature_path_dict, family_name):
+    sensitive_apis = get_sensitive_api()
+    sensitive_methods = set()
+    for method in sensitive_apis: # translate the format of method string 
+        method = method.replace('->', ':')
+        sensitive_methods.add(method)
+    periods_api = []
+    root_dir = '/mnt/AndroZoo/DroidEvolver_feature'
+    idx = 0
+    diff_period = []
+    diff_p0_period = []
+    diff_all_period = []
+    previous_api_set = set()
+    for period in family_app_periods: # period ['%d-%d' % (period_start_year_month, period_end_year_month), period_row]
+        period_time = period[0]
+        period_app_list = period[1]
+        cnt = 0
+        period_api_set = set()
+        for row in period_app_list:
+            md5 = row[0]
+            feature_path = feature_path_dict[md5]
+            feature_abspath = os.path.join(root_dir, feature_path)
+            if os.path.exists(feature_abspath):
+                cnt += 1
+                with open(feature_abspath, 'rb') as f:
+                    apis = pkl.load(f)
+                    for api in apis:
+                        if api not in sensitive_methods:
+                            continue
+                        period_api_set.add(api)
+            else:
+                print('not exist: %s' % (feature_abspath))
+        periods_api.append(period_api_set)
+        if idx != 0:
+            delete_api_set, common_api_set, add_api_set = diff_two_period(periods_api[idx - 1], periods_api[idx])
+            diff_period.append([period_time, len(delete_api_set), len(common_api_set), len(add_api_set)])
+
+            delete_p0_api_set, common_p0_api_set, add_p0_api_set = diff_two_period(periods_api[0], periods_api[idx])
+            diff_p0_period.append([period_time, len(delete_p0_api_set), len(common_p0_api_set), len(add_p0_api_set)])
+            
+            delete_previous_api_set, common_previous_api_set, add_previous_api_set = diff_two_period(previous_api_set, period_api_set)
+            diff_all_period.append([period_time, len(delete_previous_api_set), len(common_previous_api_set), len(add_previous_api_set)])
+#             with open('save_diff_type_apis/%s_p%d_delete_api_list.txt' % (family_name, idx), 'w') as f:
+#                 f.write('\n'.join(delete_previous_api_set))
+#                 f.write('\n')
+#             with open('save_diff_type_apis/%s_p%d_common_api_list.txt' % (family_name, idx), 'w') as f:
+#                 f.write('\n'.join(common_previous_api_set))
+#                 f.write('\n')
+#             with open('save_diff_type_apis/%s_p%d_add_api_list.txt' % (family_name, idx), 'w') as f:
+#                 f.write('\n'.join(add_previous_api_set))
+#                 f.write('\n')
+        else:
+            diff_period.append([period_time, 0, len(period_api_set), 0]) # p0
+            diff_p0_period.append([period_time, 0, len(period_api_set), 0]) # p0
+            diff_all_period.append([period_time, 0, len(period_api_set), 0]) # p0
+            
+        previous_api_set.update(period_api_set)
+        idx += 1
+
+    with open('save_diff_period_pickle/%s_diff_period_sensitive.pkl' % family_name, 'wb') as f:
+        pkl.dump(diff_period, f)
+    with open('save_diff_period_pickle/%s_diff_p0_period_sensitive.pkl' % family_name, 'wb') as f:
+        pkl.dump(diff_p0_period, f)
+    with open('save_diff_period_pickle/%s_diff_all_period_sensitive.pkl' % family_name, 'wb') as f:
+        pkl.dump(diff_all_period, f)
+
 def parse_family_app_periods_droidevolver(family_app_periods, feature_path_dict, family_name):
     periods_api = []
     root_dir = '/mnt/AndroZoo/DroidEvolver_feature'
@@ -484,8 +550,17 @@ def parse_family_app_periods_droidevolver(family_app_periods, feature_path_dict,
                 print('not exist: %s' % (feature_abspath))
         periods_api.append(period_api_set)
         if idx != 0:
-            common_apis_diff_freq_dict = diff_two_period_common_apis(previous_period_api_dict, previous_cnt, next_period_api_dict, next_cnt)
+            delete_api_set, common_api_set, add_api_set = diff_two_period(periods_api[idx - 1], periods_api[idx])
+            diff_period.append([period_time, len(delete_api_set), len(common_api_set), len(add_api_set)])
+
+            delete_p0_api_set, common_p0_api_set, add_p0_api_set = diff_two_period(periods_api[0], periods_api[idx])
+            diff_p0_period.append([period_time, len(delete_p0_api_set), len(common_p0_api_set), len(add_p0_api_set)])
             
+            delete_previous_api_set, common_previous_api_set, add_previous_api_set = diff_two_period(previous_api_set, period_api_set)
+            diff_all_period.append([period_time, len(delete_previous_api_set), len(common_previous_api_set), len(add_previous_api_set)])
+            with open('save_diff_type_apis/%s_p%d_delete_api_list.txt' % (family_name, idx), 'w') as f:
+                f.write('\n'.join(delete_previous_api_set))
+                f.write('\n')
             with open('save_diff_type_apis/%s_p%d_common_api_list.txt' % (family_name, idx), 'w') as f:
                 f.write('\n'.join(common_previous_api_set))
                 f.write('\n')
@@ -506,6 +581,56 @@ def parse_family_app_periods_droidevolver(family_app_periods, feature_path_dict,
         pkl.dump(diff_p0_period, f)
     with open('save_diff_period_pickle/%s_diff_all_period.pkl' % family_name, 'wb') as f:
         pkl.dump(diff_all_period, f)
+
+    
+#     periods_api = []
+#     root_dir = '/mnt/AndroZoo/DroidEvolver_feature'
+#     idx = 0
+#     diff_period = []
+#     diff_p0_period = []
+#     diff_all_period = []
+#     previous_api_set = set()
+#     for period in family_app_periods: # period ['%d-%d' % (period_start_year_month, period_end_year_month), period_row]
+#         period_time = period[0]
+#         period_app_list = period[1]
+#         cnt = 0
+#         period_api_set = set()
+#         for row in period_app_list:
+#             md5 = row[0]
+#             feature_path = feature_path_dict[md5]
+#             feature_abspath = os.path.join(root_dir, feature_path)
+#             if os.path.exists(feature_abspath):
+#                 cnt += 1
+#                 with open(feature_abspath, 'rb') as f:
+#                     apis = pkl.load(f)
+#                     for api in apis:
+#                         period_api_set.add(api)
+#             else:
+#                 print('not exist: %s' % (feature_abspath))
+#         periods_api.append(period_api_set)
+#         if idx != 0:
+#             common_apis_diff_freq_dict = diff_two_period_common_apis(previous_period_api_dict, previous_cnt, next_period_api_dict, next_cnt)
+#             
+#             with open('save_diff_type_apis/%s_p%d_common_api_list.txt' % (family_name, idx), 'w') as f:
+#                 f.write('\n'.join(common_previous_api_set))
+#                 f.write('\n')
+#             with open('save_diff_type_apis/%s_p%d_add_api_list.txt' % (family_name, idx), 'w') as f:
+#                 f.write('\n'.join(add_previous_api_set))
+#                 f.write('\n')
+#         else:
+#             diff_period.append([period_time, 0, len(period_api_set), 0]) # p0
+#             diff_p0_period.append([period_time, 0, len(period_api_set), 0]) # p0
+#             diff_all_period.append([period_time, 0, len(period_api_set), 0]) # p0
+#             
+#         previous_api_set.update(period_api_set)
+#         idx += 1
+# 
+#     with open('save_diff_period_pickle/%s_diff_period.pkl' % family_name, 'wb') as f:
+#         pkl.dump(diff_period, f)
+#     with open('save_diff_period_pickle/%s_diff_p0_period.pkl' % family_name, 'wb') as f:
+#         pkl.dump(diff_p0_period, f)
+#     with open('save_diff_period_pickle/%s_diff_all_period.pkl' % family_name, 'wb') as f:
+#         pkl.dump(diff_all_period, f)
 
 #     plt.cla()
 #     plt.figure(figsize = (10, 8))
@@ -586,34 +711,17 @@ def parse_family_app_periods_droidevolver_common_apis(family_app_periods, featur
                 print('not exist: %s' % (feature_abspath))
         
         periods_api.append(period_api_dict)
-        if idx != 0:
-            delete_api_set, common_api_set, add_api_set = diff_two_period(periods_api[idx - 1], periods_api[idx])
-            diff_period.append([period_time, len(delete_api_set), len(common_api_set), len(add_api_set)])
-
-            delete_p0_api_set, common_p0_api_set, add_p0_api_set = diff_two_period(periods_api[0], periods_api[idx])
-            diff_p0_period.append([period_time, len(delete_p0_api_set), len(common_p0_api_set), len(add_p0_api_set)])
-            
-            delete_previous_api_set, common_previous_api_set, add_previous_api_set = diff_two_period(previous_api_set, period_api_set)
-            diff_all_period.append([period_time, len(delete_previous_api_set), len(common_previous_api_set), len(add_previous_api_set)])
-            with open('save_diff_type_apis/%s_p%d_delete_api_list.txt' % (family_name, idx), 'w') as f:
-                f.write('\n'.join(delete_previous_api_set))
-                f.write('\n')
-            with open('save_diff_type_apis/%s_p%d_common_api_list.txt' % (family_name, idx), 'w') as f:
-                f.write('\n'.join(common_previous_api_set))
-                f.write('\n')
-            with open('save_diff_type_apis/%s_p%d_add_api_list.txt' % (family_name, idx), 'w') as f:
-                f.write('\n'.join(add_previous_api_set))
-                f.write('\n')
-            
-        previous_api_set.update(period_api_set)
-        idx += 1
-
-    with open('save_diff_period_pickle/%s_diff_period.pkl' % family_name, 'wb') as f:
-        pkl.dump(diff_period, f)
-    with open('save_diff_period_pickle/%s_diff_p0_period.pkl' % family_name, 'wb') as f:
-        pkl.dump(diff_p0_period, f)
-    with open('save_diff_period_pickle/%s_diff_all_period.pkl' % family_name, 'wb') as f:
-        pkl.dump(diff_all_period, f)
+#         if idx != 0:
+#             diff_two_period_common_apis(periods_api[idx - 1], previous_cnt, next_period_api_dict, next_cnt)
+#             
+#         idx += 1
+# 
+#     with open('save_diff_period_pickle/%s_diff_period.pkl' % family_name, 'wb') as f:
+#         pkl.dump(diff_period, f)
+#     with open('save_diff_period_pickle/%s_diff_p0_period.pkl' % family_name, 'wb') as f:
+#         pkl.dump(diff_p0_period, f)
+#     with open('save_diff_period_pickle/%s_diff_all_period.pkl' % family_name, 'wb') as f:
+#         pkl.dump(diff_all_period, f)
 
 
 def count_api_evolver_in_family():
@@ -700,7 +808,7 @@ def diff_two_period_common_apis(previous_period_api_dict, previous_cnt, next_per
         next_frequency = next_period_api_dict[api]/float(next_cnt)
         diff_freq = abs(previous_frequency - next_frequency)/previous_frequency
         common_apis_diff_freq_dict[api] = diff_freq
-    return common_apis_diff_freq_dict      
+    return common_apis_diff_freq_dict
 
 
 def parse_family_app_two_periods(previous_period, next_period, seq_path_dict, family_name, average_frequency_diff):
@@ -858,6 +966,74 @@ def parse_two_periods_commmon_apis(previous_period, next_period, feature_path_di
         save_common_apis_diff_freq[5 + bound_idx] += 1
     
     with open('save_diff_period_pickle/%s_common_apis_diff_freq.pkl' % family_name, 'wb') as f:
+        pkl.dump(common_apis_diff_freq_dict, f)
+    
+    print('%s previous %d app: %s next %d app: %s %s %s' % (family_name, previous_cnt, previous_period_time, next_cnt, next_period_time, 
+                                                     str(diff_frequency_bound_list), str(save_common_apis_diff_freq[5:])))
+    return save_common_apis_diff_freq
+
+
+def parse_two_periods_commmon_apis_sensitive(previous_period, next_period, feature_path_dict, family_name, diff_frequency_bound_list):
+    sensitive_apis = get_sensitive_api()
+    sensitive_methods = set()
+    for method in sensitive_apis: # translate the format of method string 
+        method = method.replace('->', ':')
+        sensitive_methods.add(method)
+        
+    root_dir = '/mnt/AndroZoo/DroidEvolver_feature'
+    previous_period_time = previous_period[0]
+    previous_period_api_dict = {}
+    previous_cnt = 0
+    for row in previous_period[1]:
+        md5 = row[0]
+        feature_path = feature_path_dict[md5]
+        feature_abspath = os.path.join(root_dir, feature_path)
+        if os.path.exists(feature_abspath):
+            previous_cnt += 1
+            with open(feature_abspath, 'rb') as f:
+                apis = pkl.load(f)
+                for api in apis:
+                    if api not in sensitive_methods:
+                        continue
+                    if api not in previous_period_api_dict:
+                        previous_period_api_dict[api] = 0
+                    previous_period_api_dict[api] += 1
+        else:
+            print('not exist: %s' % (feature_abspath)) 
+    
+    next_period_time = next_period[0]
+    next_period_api_dict = {}
+    next_cnt = 0
+    for row in next_period[1]:
+        md5 = row[0]
+        feature_path = feature_path_dict[md5]
+        feature_abspath = os.path.join(root_dir, feature_path)
+        if os.path.exists(feature_abspath):
+            next_cnt += 1
+            with open(feature_abspath, 'rb') as f:
+                apis = pkl.load(f)
+                for api in apis:
+                    if api not in next_period_api_dict:
+                        next_period_api_dict[api] = 0
+                    next_period_api_dict[api] += 1
+        else:
+            print('not exist: %s' % (feature_abspath)) 
+
+    common_apis_diff_freq_dict = diff_two_period_common_apis(previous_period_api_dict, previous_cnt, 
+                                                       next_period_api_dict, next_cnt)
+    save_common_apis_diff_freq = [family_name, previous_cnt, previous_period_time, next_cnt, next_period_time]
+    for _ in range(len(diff_frequency_bound_list) + 1):
+        save_common_apis_diff_freq.append(0)
+    for api, diff_freq in common_apis_diff_freq_dict.items():
+        bound_idx = 0
+        while bound_idx < len(diff_frequency_bound_list):
+            if diff_freq >= diff_frequency_bound_list[bound_idx]:
+                bound_idx += 1
+            else:
+                break
+        save_common_apis_diff_freq[5 + bound_idx] += 1
+    
+    with open('save_diff_period_pickle/%s_common_apis_diff_freq_sensitive.pkl' % family_name, 'wb') as f:
         pkl.dump(common_apis_diff_freq_dict, f)
     
     print('%s previous %d app: %s next %d app: %s %s %s' % (family_name, previous_cnt, previous_period_time, next_cnt, next_period_time, 
@@ -1350,9 +1526,41 @@ def plot_all_period_average_raw_data(families_average_diff): # family_name, per_
     foo_fig.savefig('diff_api/average_diff_apis_between_periods.eps', format='eps', dpi = 300) 
     plt.savefig('diff_api/average_diff_apis_between_periods.jpg', dpi = 300)  
 
+def plot_all_period_average_raw_data_sensitive(families_average_diff): # family_name, per_period_app_num, delete_average_api_num, common_average_api_num, add_average_api_num
+    families_x_label = []
+    families_delete_label = []
+    families_common_label = []
+    families_add_label = []
+    for row in families_average_diff:
+        family_name = row[0]
+        delete_api = row[2]
+        common_api = row[3]
+        add_api = row[4]
+        families_x_label.append(family_name)
+        families_delete_label.append(delete_api)
+        families_common_label.append(common_api)
+        families_add_label.append(add_api)
+    families_delete_label = np.array(families_delete_label)
+    families_common_label = np.array(families_common_label)
+    families_add_label = np.array(families_add_label)
+    plt.cla()
+    plt.figure(figsize = (10, 8))
+    plt.bar(families_x_label, - families_delete_label, color = '#00BFFF', label = 'delete sensitive apis')
+    plt.bar(families_x_label, families_common_label, color = '#B0C4DE', label = 'common sensitive apis')
+    plt.bar(families_x_label, families_add_label, color = '#4169E1', label = 'add sensitive apis', bottom = families_common_label)
+    plt.tick_params(labelsize=8)
+    plt.xticks(rotation = 55)
+    plt.legend()
+#     plt.title('malware families period diff apis')
+#     plt.savefig('diff_api/proportional_division_malware_families_period_diff_apis.png', dpi = 300)
+    
+    foo_fig = plt.gcf()
+    foo_fig.savefig('diff_api/average_diff_apis_between_periods_sensitive.eps', format='eps', dpi = 300) 
+    plt.savefig('diff_api/average_diff_apis_between_periods_sensitive.jpg', dpi = 300)  
+
 def plot_two_period_sensitive_method():
     families_diff = []
-    with open('top_families_diff_droidevolver_sensitive_method_0.10.csv') as f:
+    with open('proportional_division_top_families_diff_droidevolver_sensitive_method_0.10.csv') as f:
         reader = csv.reader(f) 
         for row in reader:
             family_name = row[0]
@@ -1383,55 +1591,59 @@ def plot_two_period_sensitive_method():
     families_add_label = np.array(families_add_label)
     plt.cla()
     plt.figure(figsize = (10, 8))
-    plt.bar(families_x_label, - families_delete_label, color = '#00BFFF', label = 'family delete sensitive apis')
-    plt.bar(families_x_label, families_common_label, color = '#B0C4DE', label = 'family common sensitive apis')
-    plt.bar(families_x_label, families_add_label, color = '#4169E1', label = 'family add sensitive apis', bottom = families_common_label)
-    plt.tick_params(labelsize=5)
+    plt.bar(families_x_label, - families_delete_label, color = '#00BFFF', label = 'delete sensitive apis')
+    plt.bar(families_x_label, families_common_label, color = '#B0C4DE', label = 'common sensitive apis')
+    plt.bar(families_x_label, families_add_label, color = '#4169E1', label = 'add sensitive apis', bottom = families_common_label)
+    plt.tick_params(labelsize=8)
+    plt.xticks(rotation = 55)
     plt.legend()
-    plt.title('malware families period diff sensitive apis')
-    plt.savefig('diff_sensitive_api/malware_families_period_diff_sensitive_apis.png', dpi = 300)
-    
+#     plt.title('malware families period diff sensitive apis')
+    plt.savefig('diff_sensitive_api/proportional_division_malware_families_period_diff_sensitive_apis.png', dpi = 300)
+ 
+    foo_fig = plt.gcf()
+    foo_fig.savefig('diff_api/diff_sensitive_apis_between_periods.eps', format='eps', dpi = 300) 
+    plt.savefig('diff_api/diff_sensitive_apis_between_periods.jpg', dpi = 300)      
         
-    for row in families_diff:
-        family_name = row[0]
-        previous_period_time = row[1]
-        start_period_time = int(previous_period_time.split('-')[0])
-        end_period_time = int(previous_period_time.split('-')[1])
-        delete_api = row[3]
-        common_api = row[4]
-        add_api = row[5]
-        x_labels = [str(start_period_time)]
-        y_values = [[delete_api, common_api, 0]]
-        tmp_end_period_time = update_stop_time(start_period_time, 3)
-        while tmp_end_period_time < end_period_time:
-            x_labels.append(str(tmp_end_period_time))
-            y_values.append([0, 0, 0])
-            tmp_end_period_time = update_stop_time(tmp_end_period_time, 3)
-        start_period_time = int(next_period_time.split('-')[0])
-        end_period_time = int(next_period_time.split('-')[1])
-        x_labels.append(str(start_period_time))
-        y_values.append([delete_api, common_api, add_api])
-        tmp_end_period_time = update_stop_time(start_period_time, 3)
-        while tmp_end_period_time < end_period_time:
-            x_labels.append(str(tmp_end_period_time))
-            y_values.append([0, 0, 0])
-            tmp_end_period_time = update_stop_time(tmp_end_period_time, 3)
-        plt.cla()
-        plt.figure(figsize = (10, 8))
-        delete_y_value = np.array([_[0] for _ in y_values])
-        common_y_value = np.array([_[1] for _ in y_values])
-        add_y_value = np.array([_[2] for _ in y_values])
-#         print(x_labels)
-#         print(delete_y_value)
-#         print(common_y_value)
-#         print(add_y_value)
-        plt.bar(x_labels, - delete_y_value, color = '#00BFFF', label = 'delete sensitive apis')
-        plt.bar(x_labels, common_y_value, color = '#B0C4DE', label = 'common sensitive apis')
-        plt.bar(x_labels, add_y_value, color = '#4169E1', label = 'add sensitive apis', bottom = common_y_value)
-        plt.tick_params(labelsize=5)
-        plt.legend()
-        plt.title('malware %s period diff sensitive apis' % family_name)
-        plt.savefig('diff_sensitive_api/malware_%s_period_diff_sensitive_apis.png' % family_name, dpi = 300)
+#     for row in families_diff:
+#         family_name = row[0]
+#         previous_period_time = row[1]
+#         start_period_time = int(previous_period_time.split('-')[0])
+#         end_period_time = int(previous_period_time.split('-')[1])
+#         delete_api = row[3]
+#         common_api = row[4]
+#         add_api = row[5]
+#         x_labels = [str(start_period_time)]
+#         y_values = [[delete_api, common_api, 0]]
+#         tmp_end_period_time = update_stop_time(start_period_time, 3)
+#         while tmp_end_period_time < end_period_time:
+#             x_labels.append(str(tmp_end_period_time))
+#             y_values.append([0, 0, 0])
+#             tmp_end_period_time = update_stop_time(tmp_end_period_time, 3)
+#         start_period_time = int(next_period_time.split('-')[0])
+#         end_period_time = int(next_period_time.split('-')[1])
+#         x_labels.append(str(start_period_time))
+#         y_values.append([delete_api, common_api, add_api])
+#         tmp_end_period_time = update_stop_time(start_period_time, 3)
+#         while tmp_end_period_time < end_period_time:
+#             x_labels.append(str(tmp_end_period_time))
+#             y_values.append([0, 0, 0])
+#             tmp_end_period_time = update_stop_time(tmp_end_period_time, 3)
+#         plt.cla()
+#         plt.figure(figsize = (10, 8))
+#         delete_y_value = np.array([_[0] for _ in y_values])
+#         common_y_value = np.array([_[1] for _ in y_values])
+#         add_y_value = np.array([_[2] for _ in y_values])
+# #         print(x_labels)
+# #         print(delete_y_value)
+# #         print(common_y_value)
+# #         print(add_y_value)
+#         plt.bar(x_labels, - delete_y_value, color = '#00BFFF', label = 'delete sensitive apis')
+#         plt.bar(x_labels, common_y_value, color = '#B0C4DE', label = 'common sensitive apis')
+#         plt.bar(x_labels, add_y_value, color = '#4169E1', label = 'add sensitive apis', bottom = common_y_value)
+#         plt.tick_params(labelsize=5)
+#         plt.legend()
+#         plt.title('malware %s period diff sensitive apis' % family_name)
+#         plt.savefig('diff_sensitive_api/malware_%s_period_diff_sensitive_apis.png' % family_name, dpi = 300)
     print('finish')
 
 
@@ -1893,6 +2105,40 @@ def count_api_evolver_with_periods_in_family(min_x_month_after, min_rate):
         print('')
         parse_family_app_periods_droidevolver(family_app_periods, feature_path_dict, family_name)
 
+def count_sensitive_api_evolver_with_periods_in_family(min_x_month_after, min_rate):
+    feature_path_dict = get_droidevolver_feature_path_dict()
+    malware_dataset_path = 'dataset_euphony_family_filted.csv' # [md5, family, support_num, first_seen, vt_cnt]
+    family_app = {} # key = family_name, value = [[md5, first_year_month]
+    with open(malware_dataset_path, 'r') as f:
+        reader = csv.reader(f)
+        for row in reader:
+            md5 = row[0]
+            if md5 not in feature_path_dict:
+                continue
+            first_seen = row[3]
+            family_name = row[1]
+            if family_name not in family_app:
+                family_app[family_name] = []
+#             first_year_month = int(first_seen.split('-')[0] + first_seen.split('-')[1])
+            family_app[family_name].append([md5, first_seen])
+    for family_name in family_app: # 'airpush', 'smsreg', 'fakeinst', 'gappusin', 'youmi', 'dowgin', 'adwo', 'kuguo', 'secapk', 'droidkungfu'
+        if len(family_app[family_name]) < 500:
+            continue
+        family_app_periods = []
+        family_app[family_name].sort(key = lambda x:x[1])
+        
+        every_part_num = int(len(family_app[family_name]) * 0.1)
+        for part_id in range(10):
+            period_row = family_app[family_name][part_id * every_part_num: (part_id+1)*every_part_num]
+            period = ['%s -> %s' % (period_row[0][1], period_row[-1][1]), period_row]
+            family_app_periods.append(period)
+            
+        print(family_name),
+        for row in family_app_periods:
+            print('%s:%d ' % (row[0], len(row[1]))),
+        print('')
+        parse_family_app_periods_droidevolver_sensitive_method(family_app_periods, feature_path_dict, family_name)
+
 def count_api_evolver_with_periods_in_family_common_apis(min_x_month_after, min_rate):
     feature_path_dict = get_droidevolver_feature_path_dict()
     malware_dataset_path = 'dataset_euphony_family_filted.csv' # [md5, family, support_num, first_seen, vt_cnt]
@@ -1996,6 +2242,39 @@ def count_api_unstability_v5(): # get api from droidevolver feature
         family_diff = parse_two_periods_commmon_apis(previous_period, next_period, feature_path_dict, family_name, diff_frequency_bound_list)
         families_diff.append(family_diff)
     with open('proportional_division_top_families_diff_common_apis.csv', 'wb') as f:
+        writer = csv.writer(f)
+        writer.writerows(families_diff)
+
+def count_api_unstability_v5_sensitive(): # get api from droidevolver feature
+    diff_frequency_bound_list = [0.1, 0.3, 0.5, 1.0]
+    feature_path_dict = get_droidevolver_feature_path_dict()
+    malware_dataset_path = 'dataset_euphony_family_filted.csv' # [md5, family, support_num, first_seen, vt_cnt]
+    family_app = {} # key = family_name, value = [[md5, first_year_month]
+    with open(malware_dataset_path, 'r') as f:
+        reader = csv.reader(f)
+        for row in reader:
+            md5 = row[0]
+            if md5 not in feature_path_dict:
+                continue
+            first_seen = row[3]
+            family_name = row[1]
+            if family_name not in family_app:
+                family_app[family_name] = []
+#             first_year_month = int(first_seen.split('-')[0] + first_seen.split('-')[1])
+            family_app[family_name].append([md5, first_seen])
+    families_diff = []
+    for family_name in family_app: # 'airpush', 'smsreg', 'fakeinst', 'gappusin', 'youmi', 'dowgin', 'adwo', 'kuguo', 'secapk', 'droidkungfu'
+        if len(family_app[family_name]) < 500:
+            continue
+        family_app[family_name].sort(key = lambda x:x[1])
+        every_part_num = int(len(family_app[family_name]) * 0.1)
+        previous_period_row = family_app[family_name][0: every_part_num]
+        next_period_row = family_app[family_name][every_part_num: every_part_num*2]       
+        previous_period = ['%s -> %s' % (previous_period_row[0][1], previous_period_row[-1][1]), previous_period_row]
+        next_period = ['%s -> %s' % (next_period_row[0][1], next_period_row[-1][1]), next_period_row]
+        family_diff = parse_two_periods_commmon_apis_sensitive(previous_period, next_period, feature_path_dict, family_name, diff_frequency_bound_list)
+        families_diff.append(family_diff)
+    with open('proportional_division_top_families_diff_common_apis_sensitive.csv', 'wb') as f:
         writer = csv.writer(f)
         writer.writerows(families_diff)
 
@@ -2127,6 +2406,56 @@ def count_all_perios_api_changes_average():
 #         writer.writerows(diff_periods)
     print('finish')
 
+def count_all_perios_sensitive_api_changes_average():
+    feature_path_dict = get_droidevolver_feature_path_dict()
+    malware_dataset_path = 'dataset_euphony_family_filted.csv' # [md5, family, support_num, first_seen, vt_cnt]
+    family_app = {} # key = family_name, value = [[md5, first_year_month]
+    with open(malware_dataset_path, 'r') as f:
+        reader = csv.reader(f)
+        for row in reader:
+            md5 = row[0]
+            if md5 not in feature_path_dict:
+                continue
+            first_seen = row[3]
+            family_name = row[1]
+            if family_name not in family_app:
+                family_app[family_name] = []
+#             first_year_month = int(first_seen.split('-')[0] + first_seen.split('-')[1])
+            family_app[family_name].append([md5, first_seen])
+    all_periods_api_changes = []
+    families_average_diff = []
+    family_id = 0
+    for family_name in family_app: # 'airpush', 'smsreg', 'fakeinst', 'gappusin', 'youmi', 'dowgin', 'adwo', 'kuguo', 'secapk', 'droidkungfu'
+        if len(family_app[family_name]) < 500:
+            continue
+        
+        all_periods_api_changes.append([family_name, len(family_app[family_name])])
+        with open('save_diff_period_pickle/%s_diff_all_period_sensitive.pkl' % family_name, 'rb') as f:
+            diff_all_period = pkl.load(f) # [period_time, len(delete_previous_api_set), len(common_previous_api_set), len(add_previous_api_set)]
+        print(len(diff_all_period))
+        
+        delete_previous_api_num_sum = 0
+        common_previous_api_num_sum = 0
+        add_previous_api_num_sum = 0
+        idx = 0
+        for row in diff_all_period:
+            idx += 1
+            if idx <= 1:
+                continue
+            delete_previous_api_num = row[1]
+            common_previous_api_num = row[2]
+            add_previous_api_num = row[3]
+            delete_previous_api_num_sum += delete_previous_api_num
+            common_previous_api_num_sum += common_previous_api_num
+            add_previous_api_num_sum += add_previous_api_num
+        per_period_app_num = int(len(family_app[family_name])/10)
+        delete_average_api_num = delete_previous_api_num_sum/9
+        common_average_api_num = common_previous_api_num_sum/9
+        add_average_api_num = add_previous_api_num_sum/9
+        families_average_diff.append([family_name, per_period_app_num, delete_average_api_num, common_average_api_num, add_average_api_num])
+    plot_all_period_average_raw_data_sensitive(families_average_diff)
+    print('finish')
+
 def plot_families_common_apis_diff_freq():
     #[family_name, previous_cnt, previous_period_time, next_cnt, next_period_time]
     diff_frequency_bound_list = [0.1, 0.3, 0.5, 1.0]
@@ -2185,7 +2514,65 @@ def plot_families_common_apis_diff_freq():
     foo_fig.savefig('diff_api/malware_families_common_apis_evolver.eps', format='eps', dpi = 300) 
     plt.savefig('diff_api/malware_families_common_apis_evolver.jpg', dpi = 300)  
     print('finish')
+
+def plot_families_common_apis_diff_freq_sensitive():
+    #[family_name, previous_cnt, previous_period_time, next_cnt, next_period_time]
+    diff_frequency_bound_list = [0.1, 0.3, 0.5, 1.0]
+    families_common_apis_diff = []
+    new_families_common_apis_diff = []
+    with open('proportional_division_top_families_diff_common_apis_sensitive.csv', 'rb') as f:
+        reader = csv.reader(f) 
+        for row in reader:
+            family_name = row[0]
+            family_common_apis_diff = [family_name]
+            new_family_common_apis_diff = [family_name]
+            sum_num = 0
+            for i in range(len(diff_frequency_bound_list) + 1):
+                diff_freq_num = int(row[5 + i])
+                sum_num += diff_freq_num
+                family_common_apis_diff.append(diff_freq_num)
+            new_family_common_apis_diff.append(sum_num)
+            for i in range(len(diff_frequency_bound_list) + 1):
+                new_family_common_apis_diff.append('%d(%.2f%%)' % (family_common_apis_diff[i + 1], family_common_apis_diff[i + 1]/float(sum_num)*100))    
+            families_common_apis_diff.append(family_common_apis_diff)
+            new_families_common_apis_diff.append(new_family_common_apis_diff)
+    with open('api_frequency_common_apis_sensitive.csv', 'wb') as f:
+        writer = csv.writer(f) 
+        writer.writerows(new_families_common_apis_diff)
     
+    diff_labels = []
+    for i in range(len(diff_frequency_bound_list)):
+        if i == 0:
+            label = '0-%d%%' % (diff_frequency_bound_list[i]*100)
+        else:
+            label = '%d%%-%d%%' % (diff_frequency_bound_list[i-1]*100, diff_frequency_bound_list[i]*100)
+        diff_labels.append(label)
+    diff_labels.append('>=%d%%' % (diff_frequency_bound_list[-1]*100))
+    
+#     colors = ['#C0C0C0', '#87CEEB', '#5F9EA0', '#6495ED', '#4682B4', '#4169E1', '#000080']
+#     colors = ['#A9A9A9', '#32CD32', '#0000FF', '#DC143C', '#000000']
+#     colors = ['#D8BFD8', '#DDA0DD', '#EE82EE', '#FF00FF', '#EE82EE']
+    colors = ['#D3D3D3', '#87CEEB', '#6495ED', '#4169E1', '#000080']
+    
+    families_x_label = [_[0] for _ in families_common_apis_diff]
+    start_y_label = [0 for _ in families_common_apis_diff]
+    start_y_label = np.array(start_y_label)
+    plt.cla()
+    plt.figure(figsize = (10, 8))
+    for i in range(len(diff_frequency_bound_list) + 1):
+        family_diff_freq_num = [_[i+1] for _ in families_common_apis_diff]
+        family_diff_freq_num = np.array(family_diff_freq_num)
+        plt.bar(families_x_label, family_diff_freq_num, color = colors[i], label = diff_labels[i], bottom = start_y_label)
+        start_y_label = start_y_label + family_diff_freq_num
+    plt.tick_params(labelsize=8)
+    plt.xticks(rotation = 55)
+    plt.legend()
+#     plt.title('malware families period diff apis')
+    plt.savefig('diff_api/proportional_division_malware_families_periods_common_apis_sensitive.png', dpi = 300)
+    foo_fig = plt.gcf()
+    foo_fig.savefig('diff_api/malware_families_common_apis_evolver_sensitive.eps', format='eps', dpi = 300) 
+    plt.savefig('diff_api/malware_families_common_apis_evolver_sensitive.jpg', dpi = 300)  
+    print('finish')    
 
 if __name__ == "__main__":
 #     count_apis()
@@ -2198,8 +2585,16 @@ if __name__ == "__main__":
 #     count_api_unstability_v4(3, 0.1, 0.2)
 #     plot_two_period_with_diff_frequency()
 #     plot_two_period()
-    count_all_perios_api_changes_average()
-
+#     count_all_perios_api_changes_average()
+    
+    # count sensitive method
+#     count_api_unstability_v3_sensitive_method(3, 0.1)
+#     count_sensitive_api_evolver_with_periods_in_family(3, 0.1)
+#     plot_two_period_sensitive_method()
+#     count_all_perios_sensitive_api_changes_average()
+    count_api_unstability_v5_sensitive()
+    plot_families_common_apis_diff_freq_sensitive()
+    
 #     count_api_unstability_v5()
 #     plot_families_common_apis_diff_freq()
 #     count_api_evolver_with_periods_in_family(3, 0.1)
